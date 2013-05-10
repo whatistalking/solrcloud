@@ -1,0 +1,60 @@
+<ul class="breadcrumb">
+    <li><a href="index.php">Home</a><span class="divider">/</span></li>
+    <li><a href="alert.php">Alert Setting</a><span class="divider">/</span></li>
+    <li class="active">Edit Alert Info</li>
+</ul>
+<div>
+    <h4>Report Name: <?php echo $alert_info['alert_type_name'];?></h4>
+    <br />
+    <form id="form" class="form-horizontal" action="" method="post">
+        <fieldset id="edit_alert">
+            <div class="control-group">
+                <label class="control-label" for="hwm">上限 : </label>
+                <div class="controls">
+                <input name="hwm" id="hwm" type="text" value="<?php if(isset($alert_info['alert_setting']['hwm'])){echo $alert_info['alert_setting']['hwm'];}else{echo '';}?>" />
+                </div>
+            </div>
+            <br />
+            <div class="control-group">
+                <label class="control-label" for="lwm">下限 : </label>
+                <div class="controls">
+                <input name="lwm" id="lwm" type="text" value="<?php if(isset($alert_info['alert_setting']['lwm'])){echo $alert_info['alert_setting']['lwm'];}else{echo '';}?>" />
+                </div>
+            </div>
+            <br />
+            <div class="control-group">
+                <label class="control-label" for="keeptime">持续时长 : </label>
+                <div class="controls">
+                <input name="keeptime" id="keeptime" type="text" value="<?php if(isset($alert_info['alert_setting']['keeptime'])){echo $alert_info['alert_setting']['keeptime'];}else{echo '';}?>" />
+                </div>
+            </div>
+            <br /> 
+            <div class="control-group">
+                <label class="control-label" for="percent">波动百分比 : </label>
+                <div class="controls">
+                <input name="percent" id="percent" type="text" value="<?php if(isset($alert_info['alert_setting']['percent'])){echo $alert_info['alert_setting']['percent'];}else{echo '';}?>" />
+                </div>
+            </div>
+            <br />
+            <div class="control-group">
+                <label class="control-label" for="period">时间区间 : </label>
+                <div class="controls">
+                <input name="period" id="period" type="text" value="<?php if(isset($alert_info['alert_setting']['period'])){echo $alert_info['alert_setting']['period'];}else{echo '';}?>" />
+                </div>
+            </div>
+            <br />                     
+        </fieldset>
+        <div class="control-group">
+            <div class="controls">
+                <input class="btn btn-primary" id="button1" type="submit" value="Save" />
+                <input type="hidden" name="action" value="do_edit" />
+                <input type="hidden" name="alert_id" value="<?php echo $alert_info['alert_id'];?>" />
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+    $("i").tooltip();
+});
+</script>

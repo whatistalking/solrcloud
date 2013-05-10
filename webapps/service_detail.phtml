@@ -1,0 +1,645 @@
+<script type="text/javascript">
+    //function selecttest(){
+       //// var s=document.getElementById("showmeei").innerHTML;
+        //var s = $('#showmeei').val();
+        //var selectcommand="";
+        //s=s.split("\n");
+        //for(var i=0;i<s.length;i++){
+            //if(s[i].length != 0){
+                //selectcommand += s[i];
+            //}
+        //}
+        //if(selectcommand.length==0){
+            //alert("Please input some select option");return false;
+        //}
+        //var testselecturl=document.getElementById("testselecturl").value;
+        //var realurl = testselecturl+selectcommand;
+        //window.open(realurl,'_blank');
+    //}
+
+    $(document).ready(function(){
+        $("i").tooltip();
+    });
+</script>
+<script type="text/javascript" src="js/swfobject.js"></script>
+<script type="text/javascript" src="js/json2.js"></script>
+<style>
+    #pager a{
+        font-size:15px;
+        text-decoration: none;
+    }
+    .clear{
+        height:5px;
+    }
+    #solr_schema tbody tr td.ssc {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+    .text_test{
+        width: 300px;
+    }
+</style>
+<ul class="breadcrumb">
+    <li><a href="index.php">Home</a><span class="divider">/</span></li>
+    <li><a href="service.php">Service</a><span class="divider">/</span></li>
+    <li class="active">Service Detail</li>
+</ul>
+<h3><?php echo $service_info['service_name']; ?> (<?php if($service_info['service_status']){echo 'Running';}else{echo 'Stoped';} ?>)</h3>
+<ul class="nav nav-pills">
+  <li <?php if($tab == '1'){echo 'class="active"';} ?>><a href="service_detail.php?service_id=<?php echo $service_info['service_id']; ?>&tab=1" style="cursor: pointer;">Basic Info</a></li>
+  <li <?php if($tab == '2'){echo 'class="active"';} ?>><a href="service_detail.php?service_id=<?php echo $service_info['service_id']; ?>&tab=2" style="cursor: pointer;">Instance</a></li>
+  <li <?php if($tab == '3'){echo 'class="active"';} ?>><a href="service_detail.php?service_id=<?php echo $service_info['service_id']; ?>&tab=3" style="cursor: pointer;">Schema</a></li>
+  <li <?php if($tab == '4'){echo 'class="active"';} ?>><a href="service_detail.php?service_id=<?php echo $service_info['service_id']; ?>&tab=4" style="cursor: pointer;">Report</a></li>
+  <li <?php if($tab == '5'){echo 'class="active"';} ?>><a href="service_detail.php?service_id=<?php echo $service_info['service_id']; ?>&tab=5" style="cursor: pointer;">Query</a></li>
+</ul>
+<?php if($tab == '1'){ ?>
+<div id="list_info">
+<div class="row-fluid">
+    <div class="span7">
+    <div>
+    <!-- service info -->
+    <div id="pager">
+        <h4 id="service_detail">
+        Service Detail : <?php echo $service_info['service_name']; ?>
+        <span class="pull-right">
+        <a href="service.php?action=edit&service_id=<?php echo $service_info['service_id'];?>">
+            <i class="icon-edit" title="edit service"></i>
+        </a>&nbsp;&nbsp;
+        <!--<a href="schema_fields.php?action=list&service_id=<?php echo $service_info['service_id'];?>">
+            <img src="img/icons/cog.png" title="edit schema field" width="16" height="16" />edit schema field
+        </a>-->
+        <?php if(!$service_info['is_locked']){ ?>
+            <a href="service.php?action=reconfigure_master&service_id=<?php echo $service_info['service_id'];?>" onclick="return confirm('Are you sure to reconfigure solr config?');">
+                <i class="icon-cog" title="reconfigure solr config"></i>
+            </a>&nbsp;&nbsp;
+            <?php if($service_info['service_status']){ ?>
+                <a href="service.php?action=stop&service_id=<?php echo $service_info['service_id'];?>" onclick="return confirm('Are you sure to stop this service?');">
+                    <i class="icon-off" title="stop service"></i>
+                </a>&nbsp;&nbsp;
+                <a href="service.php?action=reload&service_id=<?php echo $service_info['service_id'];?>" onclick="return confirm('Are you sure to reload this service?');">
+                    <i class="icon-repeat" title="reload service"></i>
+                </a>&nbsp;&nbsp;
+            <?php } elseif (!$service_info['service_status']){ ?>
+                <a href="service.php?action=start&service_id=<?php echo $service_info['service_id'];?>" onclick="return confirm('Are you sure to start this service?');">
+                    <i class="icon-play-circle" title="start service"></i>
+                </a>
+            <?php } ?>
+         <?php } ?>
+         </span>
+         </h4>
+    </div>
+    <table class="table">
+        <tbody>
+            <tr>
+                <td colspan="2">
+                	<strong>Select Url:</strong>
+                    <tt><?php echo $cfg['search_url'].'/'.$service_info['service_name'].'/select/?q=*:*'?>&nbsp;&nbsp;<a href="<?php echo $cfg['search_url'].'/'.$service_info['service_name'].'/select/?q=*:*'?>">[link]</a></tt>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                	<strong>Update Url:</strong>
+                	<tt><?php echo $cfg['search_url'].'/'.$service_info['service_name'].'/update/'?>&nbsp;&nbsp;<a href="<?php echo $cfg['search_url'].'/'.$service_info['service_name'].'/update/'?>" target="_blank">[link]</a></tt>
+                </td>
+            </tr>
+            <!--  <tr>
+                <td colspan="2">
+                    <input id="testselecturl" type="hidden" value="<?php echo $cfg['search_url'].'/'.$service_info['service_name'].'/select/?'?>" />
+                    <strong>Select Test Command:</strong>
+                    <textarea class="text_test" id="showmeei"></textarea>
+                    <a onclick="selecttest();" style="cursor:pointer;">Test</a>
+                </td>
+            </tr> -->
+            <tr>
+                <td><strong>Version: </strong><?php echo $cfg['solr_version'][$service_info['solr_version']]['name'];?></td>
+                <td><strong>Department: </strong><?php echo ucfirst($service_info['department']); ?></td>
+            </tr>             
+            <tr>
+                <td><strong>Url Regex: </strong><?php echo $service_info['url_regex']; ?></td>
+                <td><strong>Description: </strong><?php echo $service_info['description']; ?></td>
+            </tr>
+            <tr>
+                <td><strong>MaxDocs: </strong><?php echo $solr_config['maxDocs']; ?></td>
+                <td><strong>MaxTime: </strong><?php echo $solr_config['maxTime']; ?></td>
+            </tr>
+            <tr>
+                <td><strong>PollInterval: </strong><?php echo $solr_config['pollInterval']; ?></td>
+                <td><strong>UniqueKey: </strong><?php echo $solr_schema['uniqueKey']; ?></td>
+            </tr>
+            <tr>
+                <td><strong>DefaultSearchField: </strong><?php echo $solr_schema['defaultSearchField']; ?></td>
+                <td><strong>DefaultOperator: </strong><?php echo $solr_schema['defaultOperator']; ?></td>
+            </tr>
+            <tr>
+                <td><strong>HashType: </strong><?= $cfg['hash_type'][$service_info['hash_type']]; ?></td>
+                <td><strong>OptimizeTime: </strong><?= $service_info['optimize_time']; ?></td>
+            </tr>
+            <tr>
+                <td><strong>Mode: </strong><?php echo (empty($service_info['zk'])?'Master-Slave':'Cloud');?> <a alt="改变架构！" href="service.php?action=change_mode&service_id=<?php echo $service_id;?>">.</a></td>
+            </tr>
+            <tr>
+                <?php if(!empty($dataimport)) echo '<td colspan="2"><strong>DBDataImport: </strong><tt>http://host:port/solr/dataimport?command=full-import&nbsp;&nbsp;<a href="help/dataimport.html">[简介]</a></tt></td>'; ?>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+    <div id="box">
+    <h3 id="Service Monitor">OverView</h3>  	
+        <div id="service_monitor_overview" style="wight:700px;height:400px"></div>
+<script type="text/javascript">
+    $(document).ready(function(){
+function draw_chart(chart_data){
+    url = './ajax/report.php?param=' + JSON.stringify(chart_data);
+    $.ajax({
+        url:url,
+            async:false,
+            success:function(data){
+                $('#service_monitor_overview').append(data);
+            }   
+    }); 
+}
+
+var chart_data = {};
+chart_data[0] = {};
+chart_data[0].report_id = 23;
+chart_data[0].div_id = 'service_monitor_overview';
+chart_data[0].select_date = {};
+chart_data[0].select_date[0] = {};
+chart_data[0].select_date[0].from = '<?php echo date('Y-m-d H:i:s', strtotime("-1 day"));?>';
+chart_data[0].select_date[0].to = '<?php echo date('Y-m-d H:i:s');?>';
+chart_data[0].target_id = {};
+chart_data[0].target_id[0] = <?php echo $service_info['service_id']; ?>;
+console.log(JSON.stringify(chart_data));
+draw_chart(chart_data);
+    });
+        </script>
+    </table>
+    </div>
+    </div>
+    <div class="span5 well" style="font-size:11px;">
+    <h4 id="queue_list">Queue List</h4>
+    <table class="table table-condensed">
+        <thead>
+            <tr>
+                <th width="50">ID</th>
+                <th width="140">Time</th>
+                <th>Action</th>
+                <th width="70">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if($queue_list){foreach($queue_list as $k=>$v){?>
+            <tr>
+                <td><?=$v['queue_id']?></td>
+                <td><?=$v['queue_time']?></td>
+                <td style="padding-left:10px;">
+                    <?=$v['action_name']?>&nbsp;
+                    <?=$v['action_type']?>&nbsp;
+                    <a href="#instance_id=<?=$v['target_id']?>">[<?=$v['target_id']?>]</a>
+                </td>
+                <td class="d_<?php echo $cfg["queue_status"][$v["queue_status"]][0];?>">
+                    <!--  <font color="<?=$cfg["queue_status"][$v["queue_status"]][1]?>"> -->
+                        <?=$cfg["queue_status"][$v["queue_status"]][0]?>
+                    <!-- </font> -->
+                </td>
+            </tr>
+            <?php }}?>
+            <tr>
+                <td colspan="4"><a href="queue.php?service_id=<?php echo $service_info['service_id'];?>">See all >></a></td>
+            </tr>
+        </tbody>
+    </table> 
+    </div>
+</div>
+</div>
+<?php } elseif($tab == '2'){ ?>
+<div id="list_instance" class="well">
+<div id="box">
+    <h3 id="instance_list">
+        Instance List
+        <span class="pull-right">
+            <a href="instance.php?action=add&f=s&service_id=<?php echo $service_id; ?>"><i class="icon-plus" title="add instance"></i></a>
+            <a href="service.php?action=restart_all&service_id=<?php echo $service_id;?>" onclick="return confirm('Are you sure to restart all instances!!!')">
+                <i class="icon-repeat" title="restart all instance"></i>
+            </a>
+        </span>
+    </h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th width="40px">ID</th>
+                <th>Host Name</th>
+                <th>Host Ip</th>
+                <th width="38px">Port</th>
+                <th width="80px">Lb Weight</th>
+                <th width="80px">MaxFails</th>
+                <th width="35px">Mem</th>
+                <th width="50px">Writable</th>
+                <th width="50px">Readable</th>
+                <th width="60px">Status</th>
+                <th width="105px">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if($instance_list){foreach($instance_list as $k=>$v){?>
+            <tr>
+                <td height="27px"><?php echo $v['instance_id']?></td>
+                <td><?php echo $host_list[$v['host_id']]['host_name'];?></td>
+                <td><?php echo $host_list[$v['host_id']]['host_ip'];?></td>
+                <td><?php echo $v['port_num']?><?php if($v['is_disabled']){ ?><span class="label">Unbinded</span><?php } ?></td>
+                <td><?php echo $v['lb_weight']?></td>
+                <td><?php echo $v['max_fails']?></td>
+                <td><?php echo round($v['use_memory']/1024, 2)?>G</td>
+                <td><?php echo ($v['writable'])?'<i class="icon-ok"></i>':'-';?></td>
+                <td><?php echo ($v['readable'])?'<i class="icon-ok"></i>':'-';?></td>
+                <td class="d_<?php if($v['is_locked']){ ?>processing<?php }else{echo $cfg['instance_status'][$v['instance_status']];}?>"><?php if($v['is_locked']){ ?>processing<?php }else{echo $cfg['instance_status'][$v['instance_status']];}?></td>
+                <td>
+                    <?php if(!$v['is_locked']){?>
+                    <?php if($v['instance_status']==0){?>
+                    <a href="instance.php?action=deploy&instance_id=<?php echo $v['instance_id'];?>">
+                        <i class="icon-wrench" title="deploy instance"></i>
+                    </a>
+                    <?php }elseif($v['instance_status']>0){?>
+                    <?php if($v['service_id'] && !$v['is_disabled']){?>
+                    <a href="instance.php?action=edit&instance_id=<?php echo $v['instance_id'];?>">
+                        <i class="icon-edit" title="edit instance"></i>
+                    </a>
+                    <a href="instance.php?action=unbind&instance_id=<?php echo $v['instance_id'];?>" onclick="return confirm('Are you sure to unbind this instance from service?');">
+                        <i class="icon-minus-sign" title="unbind instance from service"></i>
+                    </a>
+                    <?php if($v['writable']){?>
+                    <a href="instance.php?action=unwritable&instance_id=<?php echo $v['instance_id'];?>" onclick="return confirm('Are you sure to change this instance to unwritable?');">
+                        <i class="icon-ban-circle" title="change this instance to unwritable"></i>
+                    </a>
+                    <?php }else{?>
+                    <a href="instance.php?action=writable&instance_id=<?php echo $v['instance_id'];?>" onclick="return confirm('Are you sure to change this instance to writable?');">
+                        <i class="icon-ok-circle" title="change this instance to writable"></i>
+                    </a>
+                    <?php }?>
+
+                    <?php if($v['readable']){?>
+                    <a href="instance.php?action=unreadable&instance_id=<?php echo $v['instance_id'];?>" onclick="return confirm('Are you sure to change this instance to unreadable?');">
+                        <i class="icon-ban-circle" title="change this instance to unreadable"></i>
+                    </a>
+                    <?php }else{?>
+                    <a href="instance.php?action=readable&instance_id=<?php echo $v['instance_id'];?>" onclick="return confirm('Are you sure to change this instance to readable?');">
+                        <i class="icon-ok-circle" title="change this instance to readable"></i>
+                    </a>
+                    <?php }?>
+                    <a href="instance.php?action=restart&instance_id=<?php echo $v['instance_id'];?>" onclick="return confirm('Are you sure to restart this instance?');">
+                        <i class="icon-repeat" title="restart instance"></i>
+                    </a>
+                    <a href="http://<?php echo $host_list[$v['host_id']]['host_ip'];?>:<?php echo $v['port_num']?>/solr/select/?q=*:*" target="_<?php echo $v['instance_id'];?>">
+                        <i class="icon-briefcase" title="test"></i>
+                    </a>
+                    <?php }else{ ?>
+                    <a href="instance.php?action=bind&f=s&instance_id=<?php echo $v['instance_id'];?><?php if($v['service_id']){echo '&service_id='.$v['service_id'];} ?>">
+                        <i class="icon-plus-sign" title="bind instance into service"></i>
+                    </a>
+                    <?php } ?>
+                    <?php } ?>
+                    <?php } ?>
+                </td>
+            </tr>
+            <?php }}?>
+        </tbody>
+    </table>
+</div>
+</div>
+<?php } elseif($tab == '3'){ ?>
+<div id="list_schema">
+<?php if($service_info['schema_type']==2){ ?>
+<div class="alert alert-info" id="notice">
+    <i class="icon-eye-open"></i>
+    <button type="button" class="close" data-dismiss="alert">×</button><span>
+    schema为手动批量添加，编辑时也需要手动
+    </span>
+</div>
+<?php } ?>
+<div class="well">
+<div id="box">
+    <h3 id="schema_information">
+        Schema Information
+        <span class="pull-right">
+        <!-- <?php if($service_info['schema_type']==1){ ?><a href="schema_fields.php?action=add&service_id=<?php echo $service_id; ?>" ><i class="icon-plus" title="add field"></i></a><?php } ?> -->
+        </span>
+    </h3>
+    <table class="table" id="solr_schema">
+        <thead>
+            <tr>
+                <th width="70">Field</th>
+                <th width="60">Type</th>
+                <th width="50">Indexed</th>
+                <th width="50">Stored</th>
+                <th width="60">Required</th>
+                <th width="75">MultiValued</th>
+                <th>Default</th>
+                <?php if($service_info['schema_type']==2){ ?>
+                <th width="100px"><a href="#add">Edit Field</a></th>
+                <?php }else{ ?>
+                <th width="40px">Action</th>
+                <?php } ?>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if(isset($solr_schema['fields'])){$fields_list = $solr_schema['fields'];?>
+            <?php foreach($fields_list as $field_value) { ?>
+            <tr>
+                <td class="ssc"><?=$field_value["name"]?></td>
+                <td class="ssc"><?=$field_value["type"]?></td>
+                <td><?=$field_value["indexed"]=="true"?'<i class="icon-ok"></i>':"-"?></td>
+                <td><?=$field_value["stored"]=="true"?'<i class="icon-ok"></i>':"-"?></td>
+                <td><?=isset($field_value["required"])&&$field_value["required"]=="true"?'<i class="icon-ok"></i>':"-"?></td>
+                <td><?=isset($field_value["multiValued"])&&$field_value["multiValued"]=="true"?'<i class="icon-ok"></i>':"-"?></td>
+                <td class="ssc"><?=isset($field_value["default"])?$field_value["default"]:""?></td>
+                <td><?php if($service_info['schema_type']==1){ ?>
+                    <a href="#" onclick="edit_schema_field('<?php echo $service_id; ?>', '<?php echo $field_value['name'];?>', 'd');"><i class="icon-edit" title="edit schema field"></i></a>
+                    <!--  <a href="schema_fields.php?action=edit&service_id=<?php echo $service_id; ?>&name=<?php echo $field_value['name'];?>"><i class="icon-edit" title="edit schema field"></i></a> -->
+                    <a href="schema_fields.php?action=delete&service_id=<?php echo $service_id; ?>&name=<?php echo $field_value['name'];?>" onclick="return confirm('Are you sure to delete this field?');"><i class="icon-remove" title="delete schema field"></i></a>
+                    <?php } ?>
+                </td>
+            </tr>
+            <?php } ?>
+            <?php } ?>
+            <?php if(isset($solr_schema['dynamicFields'])){$fields_list = $solr_schema['dynamicFields'];?>
+            <?php foreach($fields_list as $field_key=>$field_value){?>
+            <?php if($field_key==0){?>
+            <tr>
+                <td colspan="8" class="ssc" ><strong>DynamicFields</strong></td>
+            </tr>
+            <?php }?>
+            <tr>
+                <td class="ssc"><?=$field_value["name"]?></td>
+                <td class="ssc"><?=$field_value["type"]?></td>
+                <td><?=isset($field_value["indexed"])&&$field_value["indexed"]=="true"?'<i class="icon-ok"></i>':"-"?></td>
+                <td><?=isset($field_value["stored"])&&$field_value["stored"]=="true"?'<i class="icon-ok"></i>':"-"?></td>
+                <td><?=isset($field_value["required"])&&$field_value["required"]=="true"?'<i class="icon-ok"></i>':"-"?></td>
+                <td><?=isset($field_value["multiValued"])&&$field_value["multiValued"]=="true"?'<i class="icon-ok"></i>':"-"?></td>
+                <td class="ssc"><?=isset($field_value["default"])?$field_value["default"]:""?></td>
+                <td><?php if($service_info['schema_type']==1){ ?>
+                    <a href="#" onclick="edit_schema_field('<?php echo $service_id; ?>', '<?php echo $field_value['name'];?>', 'd');"><i class="icon-edit" title="edit schema field"></i></a>
+                    <a href="schema_fields.php?action=delete&service_id=<?php echo $service_id; ?>&name=<?php echo $field_value['name'];?>" onclick="return confirm('Are you sure to delete this field?');"><i class="icon-remove" title="delete schema field"></i></a>
+                </td><?php } ?>
+            </tr>
+            <?php }?>
+            <?php }?>
+        </tbody>
+    </table>
+</div>
+<div id="schema_field_edit_ajax"></div>
+<div id="add">
+    <h3 id="service_list">Add Instance Schema Field</h3>
+    <form id="form" class="form-horizontal" action="schema_fields.php" method="post"> 
+        <fieldset id="solr_schema">
+            <div class="control-group">
+                <label class="control-label" for="schema_type">Schema Type : </label>
+                <div class="controls">
+			    <ul id="tab_schema" class="nav nav-tabs">
+                    <li class="<?php if($service_info['schema_type']==1)echo 'active';?>">
+                    <a href="#auto" data-toggle="tab" id="a_schema_auto" onclick="changezd_schema();">自动</a>
+                    <input style="display: none;" type="radio" id="schema_type_1" name="schema_type" 
+                    value="1" <?php if($service_info['schema_type']==1)echo 'checked';?>/>
+			        </li>
+                    <li class="<?php if($service_info['schema_type']==2)echo 'active';?>">
+                    <a href="#manual" data-toggle="tab" id="a_schema_manual" onclick="changesd_schema();">手动</a>
+                    <input style="display: none;" type="radio" id="schema_type_2" name="schema_type" 
+                    value="2" <?php if($service_info['schema_type']==2)echo 'checked';?>/>                 
+                    </li>
+                </ul>                        
+                </div>
+            </div>
+        </fieldset>
+        <div id="schema_config_zd" <?php if(isset($schema_info)){ ?>style="display:none;"<?php } ?>>
+        <fieldset id="schema_field">         
+            <div class="control-group">
+                <label class="control-label" for="name">Name : </label> 
+                <div class="controls">
+                <input name="name" id="name" type="text" value="" />
+                </div>
+            </div>              
+            <div class="control-group">
+                <label class="control-label" for="type">Type : </label>
+                <div class="controls">
+                <select name="type" id="type" onchange="get_schema_field_support_options($(this).val());">
+                    <option value="choose">choose type</option>
+                    <?php foreach($type_list as $type_list_value){?>
+                    <option value="<?php echo $type_list_value['name'];?>"><?php echo $type_list_value['name'];?></option>
+                    <?php }?>
+                </select>
+                </div>
+            </div> 
+            <div class="control-group">
+                <label class="control-label" for="indexed">Indexed : </label>
+                <div class="controls">
+                    <input type="checkbox" name="indexed" checked="checked" />
+                </div>
+            </div> 
+            <div class="control-group">
+                <label class="control-label" for="stored">Stored : </label>
+                <div class="controls">
+                    <input type="checkbox" name="stored" checked="checked" />
+                </div>
+            </div> 
+            <div class="control-group">
+                <label class="control-label" for="dynamic_field">DynamicField : </label>
+                <div class="controls">
+                    <input type="checkbox" name="dynamic_field" />
+                </div>
+            </div>
+        </fieldset> 
+        <fieldset id="schema_field_ext" style="display:none;">
+            <legend>OPTIONAL</legend>                
+        </fieldset>
+        </div> 
+        <fieldset id="schema_config_hd" <?php if(!isset($schema_info)){ ?>style="display:none;"<?php } ?>>
+            <div class="control-group">
+            <div class="controls">
+                <textarea style="width:500px;height:100px;" name="hand_config_schema" id="hand_config_schema"><?php if(isset($schema_info)){ echo $schema_info; } ?></textarea>
+            </div>
+            </div>                  
+        </fieldset>      
+        <div class="control-group">
+            <div class="controls">
+            <input class="btn btn-primary" id="button1" type="submit" value="Add" />
+            <input type="hidden" name="service_id" value="<?php echo $service_id;?>" />
+            <input type="hidden" name="action" value="update_field" />
+            </div>                 
+        </div>      
+    </form>
+</div>
+</div>
+</div>
+<?php } elseif($tab == '4'){ ?>
+<div id="list_report">
+<div class="row-fluid">
+<div class="tabbable tabs-left">
+    <ul class="nav nav-tabs">
+        <li class="nav-header">Service</li>
+        <li class="active"><a href="#a" data-toggle="tab">90%查询时间分布</a></li>
+        <li><a href="#b" data-toggle="tab">大于100ms查询数</a></li>
+        <li><a href="#c" data-toggle="tab">查询数/更新数</a></li>
+        <li><a href="#d" data-toggle="tab">文档数</a></li>
+        <li><a href="#e" data-toggle="tab">索引大小</a></li>
+        <li class="divider"></li>
+        <li class="nav-header">Instance</li>
+        <li><a href="#f" data-toggle="tab">查询明细</a></li>
+        <li><a href="#g" data-toggle="tab">90%查询时间分布</a></li>
+        <li><a href="#h" data-toggle="tab">jvm内存使用率</a></li>
+        <li><a href="#i" data-toggle="tab">Cache命中率</a></li>
+    </ul>
+<!--  </div> -->
+<style>
+.chart {
+width: 800px; height: 400px;
+}
+</style>
+<div class="tab-content">
+	<div class="tab-pane active" id="a">
+	<a href="#" onclick="add_alert_info('23','<?php echo $service_id; ?>');">Alert me</a>
+        <div class="chart" id="chart_a_23"></div>
+	</div>
+
+        <div class="tab-pane" id="b">
+        <a href="#" onclick="add_alert_info('24','<?php echo $service_id; ?>');">Alert me</a>
+        <div class="chart" id="chart_24"></div>
+        </div>
+		
+        <div class="tab-pane" id="c">
+        <a href="#" onclick="add_alert_info('21','<?php echo $service_id; ?>');">Alert me</a>
+        <div class="chart" id="chart_21"></div>
+        <a href="#" onclick="add_alert_info('22','<?php echo $service_id; ?>');">Alert me</a>
+        <div class="chart" id="chart_22"></div>
+        </div>
+
+        <div class="tab-pane" id="d">
+        <a href="#" onclick="add_alert_info('25','<?php echo $service_id; ?>');">Alert me</a>
+        <div class="chart" id="chart_25"></div>
+        </div>
+
+        <div class="tab-pane" id="e">
+        <a href="#" onclick="add_alert_info('31','<?php echo $service_id; ?>');">Alert me</a>
+        <div class="chart" id="chart_31"></div>
+        </div>
+
+        <div class="tab-pane" id="f">
+        <a href="#" onclick="add_alert_info('32','<?php echo $service_id; ?>');">Alert me</a>
+        <div class="chart" id="chart_32"></div>
+        </div>
+
+        <div class="tab-pane" id="g">
+        <a href="#" onclick="add_alert_info('33','<?php echo $service_id; ?>');">Alert me</a>
+        <div class="chart" id="chart_33"></div>
+        </div>
+
+        <div class="tab-pane" id="h">
+        <a href="#" onclick="add_alert_info('34','<?php echo $service_id; ?>');">Alert me</a>
+        <div class="chart" id="chart_34"></div>
+        </div>
+
+        <div class="tab-pane" id="i">
+        <a href="#" onclick="add_alert_info('35','<?php echo $service_id; ?>');">Alert me</a>
+        <div class="chart" id="chart_35"></div>
+        <a href="#" onclick="add_alert_info('36','<?php echo $service_id; ?>');">Alert me</a>
+        <div class="chart" id="chart_36"></div>
+        <a href="#" onclick="add_alert_info('37','<?php echo $service_id; ?>');">Alert me</a>
+        <div class="chart" id="chart_37"></div>
+        <a href="#" onclick="add_alert_info('38','<?php echo $service_id; ?>');">Alert me</a>
+        <div class="chart" id="chart_38"></div>
+        <a href="#" onclick="add_alert_info('39','<?php echo $service_id; ?>');">Alert me</a>
+        <div class="chart" id="chart_39"></div>
+ 
+        </div>
+</div>
+<script src="./js/amcharts/amcharts.js" type="text/javascript"></script>
+<script type="text/javascript" src="./js/jquery.appear-1.1.1.min.js"></script>
+<script>
+    $(function(){
+        var service_id = <?php echo $service_id;?>;
+        $('.tab-pane').appear(function(){
+            $.each($(this).find('.chart'), function( index, item){
+                idString = $(item).attr('id');
+                report_id = idString.substring(idString.lastIndexOf("_") + 1, idString.length);
+                $.ajax({
+                        url:'./ajax/report.php?param={"0":{"report_id":"'+report_id+'","target_id":{"0":"'+service_id+'"},"div_id":"'+idString+'"}}',
+                        async: false,
+                        success : function(html) {
+                            $(document.body).append(html);
+                        }
+                });
+            });
+        });
+    });
+</script>
+
+</div>
+</div>
+</div>
+<?php } ?>
+
+<?php if($tab == '5'){ ?>
+<div style="height:40px">
+    <form id="query_form" action="" mathod="get">
+        <input type="text" value="<?php echo $date;?>" data-date-format="yyyy-mm-dd" class="sc-right date-picker" id="date-picker" name="date" />
+        <input type="hidden" name="query_type" />
+        <input type="hidden" name="service_id" value="<?php echo $service_id;?>"/>
+        <input type="hidden" name="tab" value="<?php echo $tab;?>"/>
+    </form>
+</div>
+<script type="text/javascript" src="js/bootstrap-datepicker.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    $('.date-picker').datepicker().on('changeDate', function(ev){
+        $('#query_tabs .active').trigger('click');
+    });
+    $('#query_tabs li').bind('click',function(){
+        var query_type = $(this).attr('id');
+        $('#query_form input[name="query_type"]').val(query_type);
+        form_query();
+    });
+    function form_query(){
+        $('#query_form').submit();
+    }
+});
+</script>
+<script type="text/javascript" src="js/sort.js"></script>
+<div id="query_tabs">
+    <ul class="nav nav-tabs">
+    <li <?php if($query_type !=='frequent') echo 'class="active"';?> id="slow"><a href="#">SlowQuery</a></li>
+    <li <?php if($query_type =='frequent') echo 'class="active"';?> id="frequent"><a href="#">FrequentQuery</a></li>
+    </ul>
+</div>
+<div class="well">
+<table class="table table-striped" id="slowquery_list" style="word-break: break-all;word-wrap: break-word;">
+<thead><tr><th class="th_sort" width="10%" onclick="sortTable('slowquery_list', 0, 0)">Avg(ms)</th><th width="10%"class="th_sort" onclick="sortTable('slowquery_list', 1, 0)">Count</th><th class="th_sort" width="70%"onclick="sortTable('slowquery_list', 2, 0)">Url</th><th width="10%"class="th_sort" onclick="sortTable('slowquery_list', 3, 0)">Date</th></tr></thead>
+<tbody>
+<?php if(!empty($query_list)){foreach($query_list as $query){?>
+<tr><td><?php echo $query['avg'];?></td><td><?php echo $query['count'];?></td><td style="font-size:10px"><?php echo $query['url'];?></td><td><?php echo $query['log_time'];?></td></tr>
+<?php } ?>
+<tbody>
+</table>
+</div>
+<?php }} ?>
+
+
+
+
+
+
+<script>
+window.onload=service_add_schema_valid;
+</script>
+<script type="text/javascript">
+function changezd_schema(){
+    document.getElementById("schema_config_hd").style.display="none";
+    document.getElementById("schema_config_zd").style.display="";
+    $("#schema_type_1").attr('checked', true);
+    add_service_schema_valid_destroy();
+}
+
+function changesd_schema(){
+    document.getElementById("schema_config_hd").style.display="";
+    document.getElementById("schema_config_zd").style.display="none";
+    $("#schema_type_2").attr('checked', true);
+    add_service_schema_valid_add();
+}
+</script>

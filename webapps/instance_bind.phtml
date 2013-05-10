@@ -1,0 +1,36 @@
+<ul class="breadcrumb">
+    <li><a href="index.php">Home</a> <span class="divider">/</span></li>
+    <li><a href="instance.php">Instance</a><span class="divider">/</span></li>
+    <li class="active">Bind Instance</li>
+</ul>
+<div class="well">
+    <h3 id="bind_instance">Bind Instance</h3>
+    <form id="form" action="" method="post">  
+        <fieldset id="instance">
+            <legend>SERVICE INFORMATION</legend>
+            <?php if($service_list){foreach($service_list as $slv){?>
+            <p>
+                <input type="radio" name="service_id" value="<?php echo $slv['service_id'];?>" />
+                <?php echo $slv['service_name'];?>
+            </p>
+            <?php }}?>
+        </fieldset>
+          
+        <fieldset id="instance">
+            <legend>INSTANCE INFORMATION</legend>                
+            <label for="lb_weight">Lb Weight : </label>
+            <input name="lb_weight" id="lb_weight" type="text" value="" />
+            <br />
+        </fieldset>
+           
+        <div align="center">
+            <input class="btn" id="button1" type="submit" value="Send" />                      
+            <input type="hidden" name="action" value="do_bind" />
+            <input type="hidden" name="instance_id" value="<?php echo $instance_id;?>" />                      
+        </div>                             
+    </form>
+</div>
+
+<script>
+window.onload=lb_weight_valid;
+</script>

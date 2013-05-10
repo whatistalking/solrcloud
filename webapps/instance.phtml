@@ -1,0 +1,113 @@
+<ul class="breadcrumb">
+    <li><a href="index.php">Home</a><span class="divider">/</span></li>
+    <li class="active">Instance</li>
+</ul>
+<div class="btn-toolbar">
+    <h3>Instance List   
+    <div class="btn-group">
+        <a href="instance.php?action=add" class="btn btn-primary btn-small">+Add a new instance</a>
+    </div>
+    <div class="btn-group sc-right" data-toggle="buttons-radio">
+        <button class="btn btn-mini" id="b_active">Active</button>
+        <button class="btn btn-mini" id="b_all">All</button>
+        <button class="btn btn-mini" id="b_stoped">Stoped</button>
+    </div>
+    </h3>
+</div>
+<ul class="nav nav-tabs">
+    <li class="tab_depart btn btn-link active" id="t_all">All</li>
+    <li class="tab_depart btn btn-link" id="t_anjuke">Anjuke</li>        
+    <li class="tab_depart btn btn-link" id="t_haozu">Haozu</li>        
+    <li class="tab_depart btn btn-link" id="t_aifang">Aifang</li>        
+    <li class="tab_depart btn btn-link" id="t_jinpu">Jinpu</li>        
+    <li class="tab_depart btn btn-link" id="t_inc">Inc</li>
+</ul>
+<table class="table" id="list_table">
+    <thead>
+        <tr>
+            <th class="th_sort" onclick="sortTable('list_table', 0, 0, 'int')">ID</th>
+            <th class="th_sort" onclick="sortTable('list_table', 1, 0)">Host Name</th>
+            <th class="th_sort" onclick="sortTable('list_table', 2, 0)">Host Ip</th>
+            <th class="th_sort" onclick="sortTable('list_table', 3, 0)">Port</th>
+            <th class="th_sort" onclick="sortTable('list_table', 4, 0)">Version</th>
+            <th class="th_sort" onclick="sortTable('list_table', 5, 1)">Service Name</th>
+            <th class="th_sort" onclick="sortTable('list_table', 6, 0)">Memory</th>
+            <th class="th_sort" onclick="sortTable('list_table', 7, 1)">Writable</th>
+            <th class="th_sort" onclick="sortTable('list_table', 8, 1)">Readable</th>
+            <th class="th_sort" onclick="sortTable('list_table', 9, 0)">Status</th>
+            <th width="85px">Action</th>
+            <th width="65px">Admin</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if($instance_list){foreach($instance_list as $k=>$v){ ?>
+        <tr class="toggleShowInstance <?php echo $cfg['instance_status'][$v['instance_status']];?> <?php if($v['department']){echo $v['department'];}else{echo 'none';} ?>" id="t<?php echo $v['instance_id'];?>">
+            <td height="27px"><?php echo $v['instance_id']?></td>
+            <td><?php echo $host_list[$v['host_id']]['host_name'];?></td>
+            <td><?php echo $host_list[$v['host_id']]['host_ip'];?></td>
+            <td><?php echo $v['port_num'];?><?php if($v['is_disabled']){ ?><span class="label">Unbinded</span><?php } ?></td>
+            <td><?php echo $cfg['solr_version'][$v['solr_version']]['name']; ?></td>
+            <td><a href="service_detail.php?service_id=<?php echo $v['service_id']?>"><?php echo $v['service_name'];?></a></td>
+            <td><?php if($v['use_memory']){echo round($v['use_memory']/1024, 2)."G";}?></td>
+            <td><?php echo ($v['writable'])?'<i class="icon-ok"></i>':'-';?></td>
+            <td><?php echo ($v['readable'])?'<i class="icon-ok"></i>':'-';?></td>
+            <td class="d_<?php if($v['is_locked']){ ?>processing<?php }else{echo $cfg['instance_status'][$v['instance_status']];}?>"><?php if($v['is_locked']){ ?>processing<?php }else{echo $cfg['instance_status'][$v['instance_status']];}?></td>
+            <td>
+                <?php if(!$v['is_locked']){?>
+                <?php if($v['instance_status']==0){ ?>
+                <a href="instance.php?action=deploy&instance_id=<?php echo $v['instance_id'];?>">
+                    <i class="icon-wrench" title="deploy instance"></i>
+                </a>
+                <?php }elseif($v['instance_status']>0){ ?>
+                <?php if($v['service_id'] && !$v['is_disabled']){?>
+                <a href="instance.php?action=edit&instance_id=<?php echo $v['instance_id'];?>">
+                    <i class="icon-edit" title="edit instance"></i>
+                </a>
+                <a href="instance.php?action=unbind&instance_id=<?php echo $v['instance_id'];?>" onclick="return confirm('Are you sure to unbind this instance from service?');">
+                    <i class="icon-minus-sign" title="unbind instance from service"></i>
+                </a>
+                <?php if($v['readable']){?>
+                <a href="instance.php?action=unreadable&instance_id=<?php echo $v['instance_id'];?>" onclick="return confirm('Are you sure to change this instance to unreadable?');">
+                    <i class="icon-ban-circle" title="change this instance to unreadable"></i>
+                </a>
+                <?php }else{?>
+                <a href="instance.php?action=readable&instance_id=<?php echo $v['instance_id'];?>" onclick="return confirm('Are you sure to change this instance to readable?');">
+                    <i class="icon-ok-circle" title="change this instance to readable"></i>
+                </a>
+                <?php }?>
+                <a href="instance.php?action=restart&instance_id=<?php echo $v['instance_id'];?>" onclick="return confirm('Are you sure to restart this instance?');">
+                    <i class="icon-repeat" title="restart instance"></i>
+                </a>
+                <?php }else{?>
+                <a href="instance.php?action=bind&instance_id=<?php echo $v['instance_id'];?><?php if($v['service_id']){echo '&service_id='.$v['service_id'];} ?>">
+                    <i class="icon-plus-sign" title="bind instance into service"></i>
+                </a>
+                <?php } } }?>
+            </td>
+            <td>
+                <?php if($v['instance_status']==2):?>
+                <a href="<?php echo "http://" . $host_list[$v['host_id']]['host_ip'] . ":" . $v["port_num"] . "/solr/select/?q=*:*";?>"><i class="icon-briefcase" title="test"></i></a>
+                <a href="<?php echo "http://" . $host_list[$v['host_id']]['host_ip'] . ":" . $v["port_num"] . "/solr/admin/file/?file=schema.xml";?>"><i class="icon-file" title="schema"></i></a>
+                <a href="<?php echo "http://" . $host_list[$v['host_id']]['host_ip'] . ":" . $v["port_num"] . "/solr/admin/ping";?>"><i class="icon-globe" title="ping"></i></a>
+                <?php endif?>
+            </td>
+        </tr>
+        <?php }}?>
+    </tbody>
+</table>
+<script type="text/javascript" src="js/instance.js"></script>
+<script type="text/javascript" src="js/sort.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+
+	<?php if ($from == 'new') {?>
+	var id = "<?php echo $v['instance_id']; ?>";
+	//$("#tr_"+id).click(function () {
+	      $("#t"+id).effect("highlight", {}, 3000);
+	//});
+    <?php } ?>
+
+    $("i").tooltip();
+
+});
+</script>

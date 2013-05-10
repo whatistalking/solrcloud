@@ -1,0 +1,55 @@
+<div id="box">
+    <h3 id="service_list">
+        Instance Schema Information
+        <span class="f-right">
+            <a href="schema_fields.php?action=add&service_id=<?php echo $service_id; ?>" ><img src="img/icons/add.gif" title="add field" width="16" height="16" /></a>
+        </span>
+    </h3>
+        <table width="100%">
+            <thead>
+                <tr>
+                    <th width="70px">Type</th>
+                    <th>Field</th>                            
+                    <th width="40px">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if(isset($schema_config['config']['fields'])){$fields_list=$schema_config['config']['fields'];?>
+                <?php foreach($fields_list as $field_value){?>
+                <tr>
+                    <td>field</td>                                               
+                    <td>
+                        <?php if(is_array($field_value)){
+                            foreach($field_value as $field_value_key=>$field_value_value){
+                                echo "<strong>".$field_value_key.":</strong>".$field_value_value.' ';
+                            }
+                        }?>
+                    </td>                            
+                    <td>
+                        <a href="schema_fields.php?action=edit&service_id=<?php echo $service_id; ?>&name=<?php echo $field_value['name'];?>"><img src="img/icons/edit.gif" title="edit schema field" width="16" height="16" /></a>
+                        <a href="schema_fields.php?action=delete&service_id=<?php echo $service_id; ?>&name=<?php echo $field_value['name'];?>"><img src="img/icons/delete.gif" title="delete schema field" width="16" height="16" /></a>
+                    </td>
+                </tr>
+                <?php }?>
+                <?php }?>
+                <?php if(isset($schema_config['config']['dynamicFields'])){$fields_list=$schema_config['config']['dynamicFields'];?>
+                <?php foreach($fields_list as $field_value){?>
+                <tr>
+                    <td>dynamicField</td>                                                  
+                    <td>
+                        <?php if(is_array($field_value)){
+                            foreach($field_value as $field_value_key=>$field_value_value){
+                                echo "<strong>".$field_value_key.":</strong>".$field_value_value.' ';
+                            }
+                        }?>
+                    </td>                            
+                    <td>
+                        <a href="schema_fields.php?action=edit&service_id=<?php echo $service_id; ?>&name=<?php echo $field_value['name'];?>"><img src="img/icons/edit.gif" title="edit schema field" width="16" height="16" /></a>
+                        <a href="schema_fields.php?action=delete&service_id=<?php echo $service_id; ?>&name=<?php echo $field_value['name'];?>"><img src="img/icons/delete.gif" title="delete schema field" width="16" height="16" /></a>
+                    </td>
+                </tr>
+                <?php }?>
+                <?php }?>
+            </tbody>
+        </table>
+</div>

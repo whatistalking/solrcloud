@@ -1,0 +1,251 @@
+<script type="text/javascript">
+function changezd(){
+    document.getElementById("hconfig").style.display="none";
+    document.getElementById("solr_config").style.display="";
+    $("#config_type_1").attr('checked', true);
+    service_valid_add();
+}
+
+function changesd(){
+    document.getElementById("hconfig").style.display="";
+    document.getElementById("solr_config").style.display="none";
+    $("#config_type_2").attr('checked', true);
+    service_valid_destroy();
+}
+
+function changezd_schema(){
+    document.getElementById("schema_config_hd").style.display="none";
+    document.getElementById("schema_config_zd").style.display="";
+    $("#schema_type_1").attr('checked', true);
+    service_schema_valid_destroy();
+}
+
+function changesd_schema(){
+    document.getElementById("schema_config_hd").style.display="";
+    document.getElementById("schema_config_zd").style.display="none";
+    $("#schema_type_2").attr('checked', true);
+    service_schema_valid_add();
+}
+
+function changesec_info(){
+    document.getElementById("div_info").style.display="";
+    document.getElementById("div_schema").style.display="none";
+    document.getElementById("div_dataimport").style.display="none";
+}
+
+function changesec_schema(){
+    document.getElementById("div_info").style.display="none";
+    document.getElementById("div_schema").style.display="";
+    document.getElementById("div_dataimport").style.display="none";
+}
+function changesec_dataimport(){
+    document.getElementById("div_info").style.display="none";
+    document.getElementById("div_schema").style.display="none";
+    document.getElementById("div_dataimport").style.display="";
+}
+
+</script>
+<ul class="breadcrumb">
+    <li><a href="index.php">Home</a><span class="divider">/</span></li>
+    <li><a href="service.php">Service</a><span class="divider">/</span></li>
+    <li><a href="service_detail.php?service_id=<?php echo $service_info['service_id'];?>"><?php echo $service_info['service_name'];?></a><span class="divider">/</span></li>
+    <li class="active">Edit Service</li>
+</ul>
+<div class="well">
+    <h3 id="service_list">Edit Service <?php echo $service_info['service_name'];?></h3>
+        <ul id="tab_sec" class="nav nav-tabs">
+            <li class="active">
+                <a href="#info" data-toggle="tab" id="sec_info" onclick="changesec_info();">solr info & config</a>
+			</li>
+            <li class="">
+                <a href="#schema" data-toggle="tab" id="sec_schema" onclick="changesec_schema();">solr schema</a>               
+            </li>
+            <li class="">
+                <a href="#dataimport" data-toggle="tab" id="sec_dataimport" onclick="changesec_dataimport();">DataImport</a>               
+            </li>
+        </ul>
+        <form id="form" class="form-horizontal" action="" method="post">
+            <div id="div_info">
+            <fieldset id="schema_field">
+                <legend>Service Information</legend>    
+                    <div class="control-group">
+                        <label class="control-label" for="description">Description : </label>
+                        <div class="controls">
+                        <input name="description" id="description" placeholder="description" type="text" value="<?php echo $service_info['description'];?>"  style="width:300px" />
+                        </div>
+                    </div>
+                    <br />
+                    <div class="control-group">
+                        <label class="control-label" for="hash_type">Hash Type : </label>
+                        <div class="controls">
+                        <select name="hash_type" id="hash_type" style="width:280px">
+                            <option value="0" <?php if($service_info['hash_type']==0)echo 'selected="selected"';?>><?=$cfg['hash_type'][0]?></option>
+                            <option value="1" <?php if($service_info['hash_type']==1)echo 'selected="selected"';?>><?=$cfg['hash_type'][1]?> (need module compiled)</option>
+                        </select>
+                        </div>
+                    </div>
+                    <br />                    
+                    <div class="control-group">
+                        <label class="control-label" for="optimize_time">Optimize Time : </label>
+                        <div class="controls">
+                            <input name="optimize_time" id="optimize_time" type="text" value="<?php echo $service_info['optimize_time'];?>"  />
+                        </div>
+                    </div>
+                    <br />
+                <legend>Solr Config</legend>
+                    <div class="control-group">
+                        <label class="control-label" for="config_type">Config Type : </label>
+                        <div class="controls">
+			            <ul id="tab_config" class="nav nav-tabs">
+                            <li class="<?php if($service_info['config_type']==1)echo 'active';?>">
+                            <a href="#auto" data-toggle="tab" id="a_auto" onclick="changezd();">自动</a>
+                            <input style="display: none;" type="radio" id="config_type_1" onclick="changezd();" name="config_type"
+						    value="1" <?php if($service_info['config_type']==1)echo 'checked';?>/>
+						    </li>
+                            <li class="<?php if($service_info['config_type']==2)echo 'active';?>">
+                            <a href="#manual" data-toggle="tab" id="a_manual" onclick="changesd();">手动</a>
+      	                    <input style="display: none;" type="radio" id="config_type_2" onclick="changesd();" name="config_type"
+						    value="2" <?php if($service_info['config_type']==2)echo 'checked';?>/>                     
+                            </li>
+                        </ul>                        
+                        </div>
+                    </div>
+            </fieldset>          
+            <fieldset id="solr_config" <?php if(!is_array($solr_config)){?>style="display:none;"<?php } ?>>
+                <!--  <legend>SOLR CONFIG INFORMATION</legend> -->
+                <div class="control-group">
+                    <label class="control-label" for="maxDocs">MaxDocs : </label>
+                    <div class="controls">
+                        <input name="maxDocs" id="maxDocs" type="text" value="<?php if(is_array($solr_config)){echo $solr_config['maxDocs'];}?>" />
+                    </div>
+                </div>
+                <br />
+                <div class="control-group">
+                    <label class="control-label" for="maxTime">MaxTime : </label>
+                    <div class="controls">
+                        <input name="maxTime" id="maxTime" type="text" value="<?php if(is_array($solr_config)){echo $solr_config['maxTime'];}?>"  />
+                    </div>
+                </div>
+                <br />
+                <div class="control-group">
+                    <label class="control-label" for="pollInterval">Poll Interval : </label>
+                    <div class="controls">
+                        <input name="pollInterval" id="pollInterval" type="text" value="<?php if(is_array($solr_config)){echo $solr_config['pollInterval'];}?>"  />
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset id="hconfig" <?php if(is_array($solr_config)){ ?>style="display:none;"<?php } ?>>
+                <!-- <legend>SOLR CONFIG INFORMATION</legend> -->
+                <div class="control-group">
+                    <div class="controls">
+                        <textarea name="hand_config" id="hand_config" style="width:600px; height:200px"><?php if(!is_array($solr_config)){ echo $solr_config;} ?></textarea>
+                    </div>
+                </div>
+            </fieldset>
+            </div>
+            
+            <div id="div_schema" style="display:none;">
+            <fieldset id="solr_schema">
+                <legend>Solr Schema Information</legend>
+                <div class="control-group">
+                    <label class="control-label" for="schema_type">Schema Type : </label>
+                    <div class="controls">
+			        <ul id="tab_schema" class="nav nav-tabs">
+                        <li class="<?php if($service_info['schema_type']==1)echo 'active';?>">
+                        <a href="#auto" data-toggle="tab" id="a_schema_auto" onclick="changezd_schema();">自动</a>
+                        <input style="display: none;" type="radio" id="schema_type_1" name="schema_type" onclick="changezd_schema();"
+                        value="1" <?php if($service_info['schema_type']==1)echo 'checked';?>/>
+						</li>
+                        <li class="<?php if($service_info['schema_type']==2)echo 'active';?>">
+                        <a href="#manual" data-toggle="tab" id="a_schema_manual" onclick="changesd_schema();">手动</a>
+                        <input style="display: none;" type="radio" id="schema_type_2" name="schema_type" onclick="changesd_schema();"
+                        value="2" <?php if($service_info['schema_type']==2)echo 'checked';?>/>                 
+                        </li>
+                    </ul>                        
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset id="schema_config_hd" <?php if(is_array($solr_schema)){ ?>style="display:none;"<?php } ?>>
+                <div class="control-group">
+                    <div class="controls">
+                        <textarea name="hand_config_schema" id="hand_config_schema" style="width:600px; height:200px"><?php if(!is_array($solr_schema)){ echo $solr_schema;} ?></textarea>
+                    </div>
+                </div>                  
+            </fieldset>
+            <fieldset id="schema_config_zd" <?php if(!is_array($solr_schema)){ ?>style="display:none;"<?php } ?>>
+                <div class="control-group">
+                    <label class="control-label" for="uniqueKey">UniqueKey : </label>
+                    <div class="controls">
+                        <select name="uniqueKey" id="uniqueKey">
+                            <option value="">choose</option>
+                            <?php foreach($fields_list as $v){?>
+                            <option value="<?php echo $v['name'];?>" <?php if($v['name']==$solr_schema['uniqueKey'])echo "selected";?>><?php echo $v['name'];?></option>
+                            <?php }?>
+                        </select>
+                    </div>
+                </div>
+                <br />
+                <div class="control-group">
+                    <label class="control-label" for="defaultSearchField">DefaultSearch : </label>
+                    <div class="controls">
+                        <select name="defaultSearchField" id="defaultSearchField">
+                            <option value="">choose</option>
+                            <?php foreach($fields_list as $v){?>
+                            <option value="<?php echo $v['name'];?>" <?php if($v['name']==$solr_schema['defaultSearchField'])echo "selected";?>><?php echo $v['name'];?></option>
+                            <?php }?>
+                        </select>
+                    </div>
+                </div>
+                <br />
+                <div class="control-group">
+                    <label class="control-label" for="defaultOperator">DefaultOperator : </label>
+                    <div class="controls">
+                        <input type="radio" name="defaultOperator" value="AND" <?php if($solr_schema['defaultOperator']=='AND')echo 'checked';?>/>AND  
+                        <input type="radio" name="defaultOperator" value="OR" <?php if($solr_schema['defaultOperator']=='OR')echo 'checked';?>/>OR
+                    </div>
+                </div>
+            </fieldset>
+            </div>     
+
+
+
+            
+            <div id="div_dataimport" style="display:none;">
+                <legend>Import Data From DB</legend>
+                <label class="control-label">db-data-config.xml : </label>
+                <textarea style="width:750px; height:200px" name="dataimport" ><?php echo $solr_dataimport;?></textarea>
+                <br />
+                <br /> 
+                <label class="control-label">example : </label>
+                <textarea style="width:750px; height:200px; font-size:10px;"  readonly="readonly" >
+<dataConfig>
+    <dataSource type="JdbcDataSource" driver="com.mysql.jdbc.Driver" url="jdbc:mysql://host:port/dbname" user="user" password="pwd"/>
+    <document>
+        <entity name="item" pk="id" query="select * from item"
+                deltaImportQuery="select * from item where id='${dih.delta.id}'"
+                deletedPkQuery ="select id from item where deleted=1"
+                deltaQuery="select * from item where last_modified > '${dataimporter.last_index_time}'">
+            <field column="NAME" name="name" />
+        </entity>
+    </document>
+</dataConfig>
+                </textarea>
+                <br />
+                <br />
+                <label class="control-label" style="padding-top:0px">帮助手册: </label>
+                <a href="help/dataimport.html">help/dataimport.html</a>
+            </div>
+
+            <div class="control-group">
+                <div class="controls">
+                <br />
+                <input class="btn btn-primary" id="button1" type="submit" value="Send" />
+                <input type="hidden" name="action" value="do_edit" />
+                <input type="hidden" name="service_id" value="<?php echo $service_info['service_id'];?>" />
+                </div>
+            </div>       
+        </form>
+</div>
+<script>
+    window.onload=service_valid;
+</script>

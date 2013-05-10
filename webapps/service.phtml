@@ -1,0 +1,71 @@
+<ul class="breadcrumb">
+    <li><a href="index.php">Home</a><span class="divider">/</span></li>
+    <li class="active">Service</li>
+</ul> 
+<div class="btn-toolbar">
+    <h3>Service List   
+    <div class="btn-group">
+        <a href="service.php?action=add" class="btn btn-primary btn-small">+Add a new service</a>
+    </div>
+    <div class="btn-group sc-right" data-toggle="buttons-radio">
+        <button class="btn btn-mini" id="b_active">Active</button>
+        <button class="btn btn-mini" id="b_all">All</button>
+        <button class="btn btn-mini" id="b_stoped">Stoped</button>
+    </div>
+    </h3>
+</div>
+<ul class="nav nav-tabs">
+    <li class="tab_depart btn btn-link active" id="t_all">All</li>
+    <li class="tab_depart btn btn-link" id="t_anjuke">Anjuke</li>        
+    <li class="tab_depart btn btn-link" id="t_haozu">Haozu</li>        
+    <li class="tab_depart btn btn-link" id="t_aifang">Aifang</li>        
+    <li class="tab_depart btn btn-link" id="t_jinpu">Jinpu</li>        
+    <li class="tab_depart btn btn-link" id="t_inc">Inc</li>
+</ul>
+<table class="table table-striped" id="list_table">
+    <thead>
+        <tr>
+            <th class="th_sort" onclick="sortTable('list_table', 0, 0, 'int')">ID</th>
+            <th class="th_sort" onclick="sortTable('list_table', 1, 1)">Service Name</th>
+            <th class="th_sort" onclick="sortTable('list_table', 2, 0)">Version</th>
+            <th class="th_sort" onclick="sortTable('list_table', 3, 0)">Department</th>
+            <th class="th_sort" onclick="sortTable('list_table', 4, 0)">Description</th>
+            <th class="th_sort" onclick="sortTable('list_table', 5, 0)">Status</th>
+            <!--  <th>Locked</th>-->
+            <!-- <td>Action</td> -->
+        <tr>
+    </thead>
+    <tbody>
+        <?php if($service_list){foreach($service_list as $k => $v){ ?>
+        <tr class="toggleShowInstance <?php if($v['service_status']){echo 'running';}else{echo 'stoped';} ?> <?php if($v['department']){echo $v['department'];}else{echo 'none';} ?>" >
+            <td><?=$v['service_id']?></td>
+            <td><a href="service_detail.php?service_id=<?=$v['service_id']?>"><?=$v['service_name']?></a></td>
+            <td><?php  echo $cfg['solr_version'][$v['solr_version']]['name'];?></td>
+            <td><?php echo ucfirst($v['department']);?></td>
+            <td><?php if($v['description']){echo htmlspecialchars($v['description']);}else{echo ' ';} ?></td>
+            <td class="<?php if($v['service_status']){echo 'd_running';}else{echo 'd_stoped';} ?>"><?php if($v['service_status']){echo 'Running';}else{echo 'Stoped';}?></td>
+            <!--  <td><?php if($v['is_locked']){?><i class="icon-lock"></i><?php }else{}?>-</td> -->
+            <!-- <td>
+                <a href="service.php?action=edit&service_id=<?php echo $v['service_id'];?>"><i class="icon-edit" title="edit service"></i></a>
+                <?php if(!$v['is_locked']){?>
+                    <a href="service.php?action=reconfigure_master&service_id=<?php echo $v['service_id'];?>" onclick="return confirm('Are you sure to reconfigure solr config?');"><i class="icon-cog" title="reconfigure solr config"></i></a>
+                <?php if($v['service_status']){?>
+                    <a href="service.php?action=stop&service_id=<?php echo $v['service_id'];?>" onclick="return confirm('Are you sure to stop this service?');">
+                        <i class="icon-off" title="stop service"></i>
+                    </a>
+                    <a href="service.php?action=reload&service_id=<?php echo $v['service_id'];?>" onclick="return confirm('Are you sure to reload this service?');">
+                        <i class="icon-repeat" title="reload service"></i>
+                    </a>
+                <?php }elseif(!$v['service_status']){?>
+                    <a href="service.php?action=start&service_id=<?php echo $v['service_id'];?>" onclick="return confirm('Are you sure to start this service?');">
+                        <i class="icon-play-circle" title="start service"></i>
+                    </a>
+                <?php }?>
+                <?php }?>
+            </td> -->
+        </tr>
+        <?php }}?>  
+    </tbody>         
+</table>
+<script type="text/javascript" src="js/instance.js"></script>
+<script type="text/javascript" src="js/sort.js"></script>

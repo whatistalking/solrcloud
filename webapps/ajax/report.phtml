@@ -1,0 +1,70 @@
+<!--<script src="./js/amcharts/amcharts.js" type="text/javascript"></script>-->
+<script type="text/javascript">
+    var data = <?php echo json_encode($ret);?>;
+    /*单独访问本页则必须AmCharts.ready，若ajax加载则不能AmCharts.ready，$(document).load()不行呢？*/
+    $(function(){
+//        AmCharts.ready(function () {
+            $.each(data, function(i,chart){
+                chart.data.chartData = init_date(chart.data.chartData);
+                new_chart(chart);
+            });
+//        });
+    });
+    function init_date(data){
+        $.each(data, function(i, item){
+            item.date = new Date(item.date*1000);
+        });
+        return data;
+    }
+    function new_chart(chart_param){
+        var chart_line_num = chart_param.num;
+        var chartsetting = chart_param.data;
+        chart = new AmCharts.AmSerialChart();
+        chart.pathToImages = "../js/amcharts/images/";
+        chart.dataProvider = chartsetting.chartData;
+        chart.categoryField = "date";
+        /*X*/ 
+        var categoryAxis = chart.categoryAxis;
+        categoryAxis.parseDates = true; // in order char to understand dates, we should set parseDates to true
+        categoryAxis.minPeriod = "mm"; // as we have data with minute interval, we have to set "mm" here.                        
+        categoryAxis.gridAlpha = 0.07;
+        categoryAxis.dateFormats = [{period:'mm',format:'JJ:NN'},{period:'hh',format:'MM-DD JJ:NN'},{period:'DD',format:'MMM DD'},{period:'MM',format:'MMM'},{period:'YYYY',format:'YYYY'}];
+        categoryAxis.axisColor = "#DADADA";
+        /*游标*/
+        var chartCursor = new AmCharts.ChartCursor();
+        chartCursor.categoryBalloonDateFormat = "YYYY-MM-DD JJ:NN";
+        chart.addChartCursor(chartCursor);
+        /*图例*/
+        var legend = new AmCharts.AmLegend();
+        chart.addLegend(legend);
+        // SCROLLBAR
+        var chartScrollbar = new AmCharts.ChartScrollbar();
+        chart.addChartScrollbar(chartScrollbar);
+        /*Y*/
+        var valueAxis = new AmCharts.ValueAxis();
+        valueAxis.gridAlpha = 0.07;
+        valueAxis.title = chartsetting.name; 
+        chart.addValueAxis(valueAxis);
+   
+        $.each(chartsetting.graph, function(valname, setting){
+            /*GRAPH*/
+           var graph = new AmCharts.AmGraph();
+           graph.type = "line";
+           graph.valueField = valname;
+           graph.title = setting.title;
+           graph.lineColor = setting.color;
+           graph.bullet = "round";/*点*/
+           graph.bulletSize = 5;
+           chart.addGraph(graph);
+        });
+        height = 400 + (chart_line_num-5)*12;
+        style='width:550px; height:'+ height +'px;float: left; overflow: hidden;';
+
+        if($('#'+ chartsetting.div +'').length>0){}
+        else if($('#report_chart').length>0){$('#report_chart').append('<div id="'+ chartsetting.div +'" style="'+ style +'"></div>');}
+        else{$(document.body).append('<div id="'+ chartsetting.div +'" style="'+ style +'"></div>');}
+        chart.write(chartsetting.div);
+    }
+
+
+</script>

@@ -1,0 +1,49 @@
+<ul class="breadcrumb">
+    <li><a href="index.php">Home</a><span class="divider">/</span></li>
+    <li class="active">Alert Setting</li>
+</ul>
+<div>
+    <ul class="nav nav-tabs">
+    <li class=""><a href="alert.php">Alert</a></li>
+    <li class="active"><a href="alert.php?action=user">Setting</a></li>
+    </ul>
+</div>
+<div>
+    <form id="form" class="form-horizontal" action="" method="post">
+        <fieldset id="edit_setting">
+            <div class="control-group">
+                <label class="control-label" for="name">Username : </label>
+                <div class="controls">
+                <input name="name" id="name" type="text" value="<?php echo $user_setting['username'];?>" disabled="disabled" />
+                </div>
+            </div>
+            <br />
+            <div class="control-group">
+                <label class="control-label" for="phone">Phone : </label>
+                <div class="controls">
+                <input name="phone" id="phone" type="text" value="<?php echo $user_setting['mobile'];?>" />
+                </div>
+            </div>
+            <br />
+            <div class="control-group">
+                <label class="control-label" for="email">Email : </label>
+                <div class="controls">
+                <input name="email" id="email" type="text" value="<?php echo $user_setting['email'];?>" />
+                </div>
+            </div>
+            <br />            
+        </fieldset>
+        <div class="control-group">
+            <div class="controls">
+                <input class="btn btn-primary" id="button1" type="submit" value="Save" />
+                <input type="hidden" name="action" value="user_edit" />
+                <input type="hidden" name="username" value="<?php echo $user_setting['username'];?>" />
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+    $("i").tooltip();
+});
+</script>

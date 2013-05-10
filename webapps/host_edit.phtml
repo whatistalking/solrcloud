@@ -1,0 +1,46 @@
+<ul class="breadcrumb">
+    <li><a href="index.php">Home</a> <span class="divider">/</span></li>
+    <li><a href="host.php">Host</a><span class="divider">/</span></li>
+    <li class="active">Edit Host</li>
+</ul>
+<div class="well">
+    <h3 id="edit_instance">Edit Host</h3>
+    <form id="form" class="form-horizontal" action="" method="post">
+        <fieldset id="solr_config">
+            <legend>Host Information</legend>
+            <div class="control-group">
+                <label class="control-label" for="host_name">Host Name : </label>
+                <div class="controls">
+                <input name="host_name" id="host_name" type="text" value="<?php echo $host_info['host_name'];?>" />
+                </div>
+            </div>
+            <br />
+            <div class="control-group">
+                <label class="control-label" for="host_ip">Host Ip : </label>
+                <div class="controls">
+                <input name="host_ip" id="host_ip" type="text" value="<?php echo $host_info['host_ip'];?>" />
+                </div>
+            </div>
+            <br />
+            <div class="control-group">
+                <label class="control-label" for="host_memory">Host Memory : </label>
+                <div class="controls">
+                <input name="host_memory" id="host_memory" type="text" value="<?php echo $host_info['host_memory'];?>" /> MB
+                </div>
+            </div>
+            <br />    
+        </fieldset>
+        
+        <div class="control-group">
+            <div class="controls">
+            <br />
+            <input class="btn btn-primary" id="button1" type="submit" value="Send" />
+            <input type="hidden" name="action" value="do_edit" />
+            <input type="hidden" name="instance_id" value="<?php echo $params['host_id'];?>" />
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+//window.onload=lb_weight_valid;
+</script>

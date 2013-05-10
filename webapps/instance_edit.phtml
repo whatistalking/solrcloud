@@ -1,0 +1,45 @@
+<ul class="breadcrumb">
+    <li><a href="index.php">Home</a> <span class="divider">/</span></li>
+    <li><a href="instance.php">Instance</a><span class="divider">/</span></li>
+    <li class="active">Edit Instance</li>
+</ul>
+<div class="well">
+    <h3 id="edit_instance">Edit <?php echo $instance_info['service_name'];?> Instance</h3>
+    <form id="form" class="form-horizontal" action="" method="post">
+        <fieldset id="solr_config">
+            <legend>Instance Information</legend>
+            <div class="control-group">
+                <label class="control-label" for="lb_weight">LB Weight : </label>
+                <div class="controls">
+                <input name="lb_weight" id="lb_weight" type="text" value="<?php echo $instance_info['lb_weight'];?>" />
+                </div>
+            </div>
+            <br />
+            <div class="control-group">
+                <label class="control-label" for="max_fails">Max Fails: </label>
+                <div class="controls">
+                <input name="max_fails" id="max_fails" type="text" value="<?php echo $instance_info['max_fails'];?>" />
+                </div>
+            </div>
+            <br />
+
+            <div class="control-group">
+                <label class="control-label" for="use_memory">Use Memory : </label>
+                <div class="controls">
+                <input name="use_memory" id="use_memory" type="text" value="<?php echo $instance_info['use_memory'];?>" /> MB
+                </div>
+            </div>
+            <br />
+        </fieldset>
+        <div class="control-group">
+            <div class="controls">
+                <input class="btn btn-primary" id="button1" type="submit" value="Send" />
+                <input type="hidden" name="action" value="do_edit" />
+                <input type="hidden" name="instance_id" value="<?php echo $instance_id;?>" />
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+window.onload=instance_valid;
+</script>

@@ -1,0 +1,68 @@
+<ul class="breadcrumb">
+    <li><a href="index.php">Home</a><span class="divider">/</span></li>
+    <li class="active">Host</li>
+</ul>
+<div id="box">
+    <div class="btn-toolbar">
+    <h3 id="instance_list">
+        Host List
+    </h3>
+    </div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Host Name</th>
+                <th>Host Ip</th>
+                <th width="150px">Host Memory</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if($host_list){foreach($host_list as $k=>$v){?>
+            <tr>
+                <td height="27px"><?php echo $v['host_id'];?></td>
+                <td><a href="host.php?action=detail&host_id=<?php echo $v['host_id'];?>"><?php echo $v['host_name'];?></a></td>
+                <td><?php echo $v['host_ip'];?></td>
+                <td>
+                    <div class="progress <?php if($v['used_pct'] >=80){echo 'progress-danger';}else if($v['used_pct'] <80 && $v['used_pct'] >=60){echo 'progress-warning';}else{echo 'progress-info';} ?>">
+                        <div class="bar" title="Used <?php echo $v['used_memory']."G / ".$v['host_memory_gb']."G"; ?>" style="width: <?php if($v['used_pct'] == 0){echo '1';}else{echo $v['used_pct'];} ?>%"><?php echo $v['used_pct']; ?>%</div>
+                    </div>
+                </td>
+                <!--  <td><?php echo round($v['host_memory']/1024,2);?></td>  -->
+                <td>
+                    <a href="host.php?action=edit&host_id=<?php echo $v['host_id'];?>">
+                        <i class="icon-edit" title="edit host"></i>
+                    </a>
+                    <a href="host.php?action=detail&host_id=<?php echo $v['host_id'];?>">
+                        <i class="icon-file" title="host detail"></i>
+                    </a>
+                    <!-- <input class="img_ajax" type="image" src="img/icons/bricks.png" title="host detail" value="<?php echo $v['host_id'];?>" />-->
+                </td>
+            </tr>
+            <?php }}?>
+        </tbody>
+    </table>
+</div>
+
+<br/>
+
+<style>
+td.host_mempct {
+    background-color:#D9EAED;
+}
+</style>
+<div id="host_report">
+
+</div>
+
+<style>
+div.host_ins {
+    margin-left:5px;padding-left:10px;width:100px;float:left;height:35px;
+}
+div.host_avail {
+    padding-top:3px;border-top:1px solid #D9E6F0;position:absolute;top:162px;width:180px;left:2px;text-align:center;
+}
+</style>
+
+

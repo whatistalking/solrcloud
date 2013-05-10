@@ -1,0 +1,145 @@
+<script type="text/javascript">
+function changezd(){
+    document.getElementById("hconfig").style.display="none";
+    document.getElementById("solr_config").style.display="";
+    $("#config_type_1").attr('checked', true);
+    service_valid_add();
+}
+
+function changesd(){
+    document.getElementById("hconfig").style.display="";
+    document.getElementById("solr_config").style.display="none";
+    $("#config_type_2").attr('checked', true);
+    service_valid_destroy();
+}
+</script>
+<ul class="breadcrumb">
+    <li><a href="index.php">Home</a> <span class="divider">/</span></li>
+    <li><a href="service.php">Service</a><span class="divider">/</span></li>
+    <li class="active">New Service</li>
+</ul>
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span4">
+        <h3 style="color:#3289B8;">1 Add Service Info</h3>
+        </div>
+        <div class="span4">
+        <h3 style="font-weight:normal;">2 Add Schema</h3>
+        </div>
+        <div class="span4">
+        <h3 style="font-weight:normal;">3 Running</h3>
+        </div>
+    </div>
+</div>
+<div class="well">
+    <form class="form-horizontal" id="form" method="post" action="">
+        <fieldset id="schema_field">
+            <legend>Service Infomation</legend>
+            <!-- <div id="instance_add_notice" style="display:none;" class="alert">
+                <button data-dismiss="alert" class="close">x</button>
+                <span id="instance_add_msg"> </span>
+            </div> -->
+            <div class="control-group">
+                <label class="control-label" for="service_name">Service Name</label>
+                <div class="controls">
+                    <input class="input-xlarge" name="service_name" id="service_name" type="text" value="" />
+                    <p class="help-block">input service name</p><br>
+                </div>
+                <label class="control-label" for="department">Select Department</label>
+                <div class="controls">
+                    <select name="department" id="department">
+                        <option value="anjuke">Anjuke</option>
+                        <option value="aifang">Aifang</option>
+                        <option value="haozu">Haozu</option>
+                        <option value="jinpu">Jinpu</option>
+                        <option value="inc">Inc</option>
+                    </select>
+                    <p class="help-block">select department</p><br>
+                </div>         
+                <label class="control-label" for="description">Description</label>
+                <div class="controls">
+                    <input type="text" class="input-xlarge" id="description" name="description" value=""><i style="color:#666666;" id="resultSpan"></i>
+                    <p class="help-block">input description</p><br>
+                </div>
+                <label class="control-label" for="solr_version">Version</label>
+                <div class="controls">
+                    <select name="solr_version" id="solr_version">
+                    <?php
+                    foreach ($cfg['solr_version'] as $i=>$version) {
+                        if ($i == 1) continue;
+                        $select = ($i == 3)?" selected=\"selected\"":"";
+                        echo "<option value=\"$i\" $select >".$version['name']."</option>";
+                    }
+                    ?>
+                    </select>
+                    <p class="help-block">select version</p><br>
+                </div> 
+                <label class="control-label" for="hash_type">Hash Type</label>
+                <div class="controls">
+                    <select name="hash_type" id="hash_type">
+                        <option value="0"><?=$cfg['hash_type'][0]?></option>
+                        <option value="1"><?=$cfg['hash_type'][1]?> (need module compiled)</option>
+                    </select>
+                    <p class="help-block">select hash type</p><br>
+                </div>
+                <!-- <label class="control-label" for="config_type">Hash Type</label> -->
+                <!-- <input type="hidden" id="config_type_1" name="config_type" value="1" /> -->              
+                <label class="control-label" for="optimize_time">Optimize Time</label>
+                <div class="controls">
+                    <input type="text" class="input-xlarge" id="optimize_time" name="optimize_time"><i style="color:#666666;" id="resultSpan"></i>
+                    <p class="help-block">input optimize time</p><br>
+                </div>
+            </div>
+        </fieldset>
+        <fieldset id="new_solr_config">
+            <legend>Solr Config Infomation</legend>
+            <div class="control-group">
+                <label class="control-label" for="config_type"></label>
+                <div class="controls">
+			        <ul id="tab_config" class="nav nav-tabs">
+                        <li class="active">
+                        <a href="#auto" data-toggle="tab" id="a_auto" onclick="changezd();">自动</a>
+                        <input style="display:none;" type="radio" id="config_type_1" onclick="changezd();" name="config_type"
+						value="1" checked="checked" />
+						</li>
+                        <li class="">
+                        <a href="#manual" data-toggle="tab" id="a_manual" onclick="changesd();">手动</a>
+      	                <input style="display:none;" type="radio" id="config_type_2" onclick="changesd();" name="config_type"
+						value="2" />                     
+                        </li>
+                    </ul>                        
+                </div>
+            </div> 
+            <div class="control-group" id="solr_config">
+                    <label class="control-label" for="maxDocs">MaxDocs</label>
+                    <div class="controls">
+                        <input type="text" class="input-xlarge" id="maxDocs" name="maxDocs" value="20000"><i style="color:#666666;" id="resultSpan"></i>
+                        <p class="help-block">input maxdocs</p><br>
+                    </div>                    
+                    <label class="control-label" for="maxTime">MaxTime</label>
+                    <div class="controls">
+                        <input type="text" class="input-xlarge" id="maxTime" name="maxTime" value="180000"><i style="color:#666666;" id="resultSpan"></i>
+                        <p class="help-block">input maxtime</p><br>
+                    </div>  
+                    <label class="control-label" for="pollInterval">Poll Interval</label>
+                    <div class="controls">
+                        <input type="text" class="input-xlarge" id="pollInterval" name="pollInterval" value="00:01:00"><i style="color:#666666;" id="resultSpan"></i>
+                        <p class="help-block">input poll interval</p><br>
+                    </div>       
+            </div>
+            <div class="control-group" id="hconfig" style="display:none;">
+                <div class="controls">
+                    <textarea style="width:600px;height:200px" name="hand_config" id="hand_config"></textarea>
+                </div>
+            </div>      
+        </fieldset>               
+        <div class="controls">
+            <!--<a href="step_2.html" type="button" id="ok" class="btn btn-primary">Next</a>-->
+            <input class="btn btn-primary" id="button1" type="submit" value="Next" />
+            <input type="hidden" name="action" value="do_add" />
+        </div>
+    </form>
+</div>
+<script>
+window.onload=service_valid;
+</script>

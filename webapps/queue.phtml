@@ -1,0 +1,48 @@
+<ul class="breadcrumb">
+    <li><a href="index.php">Home</a><span class="divider">/</span></li>
+    <li class="active">Queue</li>
+</ul>
+<div class="well">
+    <h3 id="queue_list">
+        Queue List
+<!--        <span class="f-right">-->
+<!--            <a href="queue.php?action=confirm" ><img src="img/icons/confirm.gif" title="do these pending queue" onclick="return confirm('Are you sure to execute these pending queue?');" /></a>-->
+<!--        </span>-->
+    </h3>
+    <table class="table">
+        <thead>
+            <tr>
+            <th width="50">ID</th>
+            <th width="140">Time</th>
+            <th>Action</th>
+            <th>Target_Id</th>
+            <th>Host_id</>
+            <!-- <th width="70">Session Id</th> -->
+            <th width="70">Status</th>
+            <th>Operator</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if($queue_list){foreach($queue_list as $k=>$v){?>
+            <tr>
+                <td><?=$v['queue_id']?></td>
+                <td><?=$v['queue_time']?></td>
+                <td style="padding-left:10px;">
+                    <?=$v['action_name']?>&nbsp;
+                    <?=$v['action_type']?>&nbsp;
+                    <a href="#instance_id=<?=$v['target_id']?>">[<?=$v['target_id']?>]</a>
+                </td>
+                <!-- <td class="a-center"><?=$v['session_id']?></td> -->
+                <td><?=$v['target_id']?></td>
+                <td><?=$v['host_id']?></td>
+                <td class="d_<?php echo $cfg["queue_status"][$v["queue_status"]][0];?>">
+                    <!-- <font color="<?=$cfg["queue_status"][$v["queue_status"]][1]?>"> -->
+                        <?=$cfg["queue_status"][$v["queue_status"]][0]?>
+                    <!-- </font> -->
+                </td>
+                <td><?=$v['updated_by']?></td>
+            </tr>
+            <?php }}?>
+        </tbody>
+    </table>
+</div>

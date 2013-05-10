@@ -1,0 +1,60 @@
+<ul class="breadcrumb">
+    <li><a href="index.php">Home</a><span class="divider">/</span></li>
+    <li class="active">Alert Setting</li>
+</ul>
+<div>
+    <ul class="nav nav-tabs">
+    <li class="active"><a href="alert.php">Alert</a></li>
+    <li class=""><a href="alert.php?action=user">Setting</a></li>
+    </ul>
+</div>
+<?php 
+if(!empty($alert_info_list)){
+    foreach($alert_info_list as $tk => $list){
+        foreach($list as $k => $row){
+?>
+<h5><?php echo $target_type[$tk].': '.$target_list[$tk][$k];?></h5>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>名称</th>
+            <th>上限</th>
+            <th>下限</th>
+            <th>持续时长</th>
+            <th>波动百分比</th>
+            <th>时间区间</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach($row as $v){?>
+        <tr>
+            <td><?php echo $v['alert_type_name'];?></td>
+            <td><?php if(isset($v['alert_setting']['hwm'])){echo $v['alert_setting']['hwm'];}else{echo '';}?></td>
+            <td><?php if(isset($v['alert_setting']['lwm'])){echo $v['alert_setting']['lwm'];}else{echo '';}?></td>
+            <td><?php if(isset($v['alert_setting']['keeptime'])){echo $v['alert_setting']['keeptime'];}else{echo '';}?></td>
+            <td><?php if(isset($v['alert_setting']['percent'])){echo $v['alert_setting']['percent'];}else{echo '';}?></td>
+            <td><?php if(isset($v['alert_setting']['period'])){echo $v['alert_setting']['period'];}else{echo '';}?></td>
+            <td>
+            <a href="alert.php?action=edit&alert_id=<?php echo $v['alert_id'];?>"><i class="icon-edit" title="Edit"></i></a>
+            <?php if($v['is_disabled'] == 0){?>
+            <a href="alert.php?action=donot&alert_id=<?php echo $v['alert_id'];?>"><i class="icon-ban-circle" title="Donot alert me"></i></a>
+            <?php }else{ ?>
+            <a href="alert.php?action=alert&alert_id=<?php echo $v['alert_id'];?>"><i class="icon-bell" title="Alert me"></i></a>
+            <?php } ?>
+            <a href="alert.php?action=delete&alert_id=<?php echo $v['alert_id'];?>" onclick="return confirm('Are you sure to delete this alert?');">
+            <i class="icon-remove" title="Delete"></i>
+            </a>
+            </td>
+        </tr>
+        <?php }?>
+    </tbody>
+</table>
+<?php } } } ?>
+<script type="text/javascript" src="js/instance.js"></script>
+<script type="text/javascript" src="js/sort.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    $("i").tooltip();
+});
+</script>

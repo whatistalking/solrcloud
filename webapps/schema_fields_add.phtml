@@ -1,0 +1,56 @@
+<ul class="breadcrumb">
+    <li><a href="index.php">Home</a> <span class="divider">/</span></li>
+    <li><a href="service.php">Service</a><span class="divider">/</span></li>
+    <li class="active">Add Schema Field</li>
+</ul>
+<div class="well">
+    <h3 id="service_list">Add Instance Schema Field</h3>
+        <form id="form" action="" method="post">
+        
+            <fieldset id="schema_field">
+                <legend>REQUIRED</legend>                
+                <p> 
+                    <label for="name">Name : </label> 
+                    <input name="name" id="name" type="text" value="" />
+                </p>                
+                <p> 
+                    <label for="type">Type : </label>
+                    <select name="type" id="type" onchange="get_schema_field_support_options($(this).val());">
+                        <option value="choose">choose type</option>
+                        <?php foreach($type_list as $type_list_value){?>
+                        <option value="<?php echo $type_list_value['name'];?>"><?php echo $type_list_value['name'];?></option>
+                        <?php }?>
+                    </select>
+                </p>
+                <p>                
+                    <label for="indexed">Indexed : </label>
+                    <input type="radio"  name="indexed" value="true" checked/> true &nbsp;
+                    <input type="radio"  name="indexed" value="false" /> false
+                </p>
+                <p>
+                    <label for="stored">Stored : </label> 
+                    <input type="radio"  name="stored" value="true" checked/> true &nbsp;
+                    <input type="radio"  name="stored" value="false" /> false
+                </p>
+                <p>
+                    <label for="dynamic_field">DynamicField : </label>
+                    <input type="radio"  name="dynamic_field" value="1" /> true &nbsp;
+                    <input type="radio"  name="dynamic_field" value="0" checked /> false
+                </p> 
+            </fieldset>
+            
+            <fieldset id="schema_field_ext" style="display:none;">
+                <legend>OPTIONAL</legend>                
+            </fieldset>
+            
+            <div align="center">
+                  <input class="btn" id="button1" type="submit" value="Send" />
+                  <input type="hidden" name="instance_id" value="<?php echo $service_id;?>" />
+                  <input type="hidden" name="action" value="update_field" />                      
+            </div>
+            
+        </form>
+</div>
+<script>
+window.onload=add_schema_valid;
+</script>

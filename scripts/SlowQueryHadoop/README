@@ -1,0 +1,11 @@
+# 用hadoop分析accesslog，获取各个service的slowquery和frequentquery
+#
+# 详见hadoop@10.10.6.99
+# 0 2 * * * /bin/bash -l /home/hadoop/importlog/corp/solr_slow_query.sh > /tmp/solr_slow_query.log 2>&1
+# 日志/user/hadoop/alog_solr 中间文件/user/corp/solr_slow_tmp 最终文件/user/corp/solr_slow_query
+# 
+#
+#
+# solrCloud从hadoop拿数据
+#
+# idx10-004: 0 5 * * *php /home/www/solr/scripts/status/service/hdfs.php

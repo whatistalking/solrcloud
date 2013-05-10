@@ -1,0 +1,106 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- <link rel="shortcut icon" href="favicon.ico">-->
+<title>Search Cloud</title>
+<!-- new -->
+<link rel="stylesheet" href="css/bootstrap.css" media="all">
+<link rel="stylesheet" href="css/bootstrap-responsive.css" >
+<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="js/bootstrap.js"></script> 
+</head>
+
+<body>
+    <div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="brand" href="index.php">Search Cloud</a>
+            <div class="nav-collapse">
+            <ul class="nav">
+                <li>
+                <a href="report.php">Report</a>
+                </li>
+                <li>
+                <a href="service.php">Service</a>
+                </li>
+                <li>
+                <a href="instance.php">Instance</a>
+                </li>
+                <li>
+                <a href="host.php">Host</a>
+                </li>
+                <li>
+                <a href="queue.php">Queue</a>
+                </li>
+            </ul>
+            </div>
+        </div>
+    </div>
+    </div>
+<div class="container">    
+    <div id="wrapper2">
+        <div id="content2">
+            <ul class="breadcrumb">
+		<li><a href="index.php">Home</a><span class="divider">/</span></li>
+		<li class="active">Host</li>
+	    </ul>
+           <h3>
+           Search Cloud Help
+           </h3>
+          <br/>
+        
+    <div class="row-fluid">
+	<div class="span4">
+	<h4>什么是search cloud</h4>
+	<span>统计管理和配置操作solr，你不用操心solr的环境，不用操心每次新建solr要做很多重复的操作，也不用担心每次操作还要跑到服务器上去弄，现在search cloud一起都帮你搞定</span>
+	<hr>
+	<h4>什么是service</h4>
+	<span>一个service代表一个搜索服务，比如二手房房源列表的搜索就可以是一个搜索服务，对应着一个service</span>
+	<hr>
+	<h4>什么是instance</h4>
+	<span>instance是service下实例，用来处理service接受到的搜索请求，</span>
+	<hr>
+	<h4>什么是Host</h4>
+	<span>Host对应一台真实的服务器，instance的实例都跑在上面</span>
+	<hr>
+	<h4>service、instance、host的关系是怎样的</h4>
+	<span>处理各种搜索请求的都是instance，service相当于instance的虚拟集合，instance都跑在host上，一个service的各个instance可以分步在不同的host上</span>
+	<hr>
+	</div>
+	<div class="span4">
+	<h4>如何新建service</h4>
+	<span>在service list有新建service的入口，然后到新建service的三步引导，顺着引导就可以轻松创建service了</span>
+	<hr>
+	<h4>如何新建instance</h4>
+	<span>在instance list页面和service detail页的instance list页都有新建instance的入口，按引导完成创建即可</span>
+	<hr>
+	<h4>如何管理service</h4>
+	<span>service detail首页就有对service各种操作的按钮</span>
+	<hr>
+	<h4>如何管理instance</h4>
+	<span>instance list可直接对instance进行管理，你也可以到service单页对instance进行管理</span>
+	<hr>
+	</div>
+	<div class="span4">
+	<h4>Further Help</h4>
+	<span><a target="_blank" href="http://lucene.apache.org/solr/index.html">solr官方文档</a></span>
+	<hr>
+	<h4>操作原则</h4>
+	<span>如果solrconfig更改过，需要重启Service才能使新配置生效</span><br>
+	<span>如果schema config更改过，需要重启instance才能使新配置生效</span>
+	<hr>
+	
+	</div>
+    </div>
+
+        </div><!-- content end -->
+            </div><!-- wrapper end -->   
+    <footer>
+        <p><span style="color: #888;">Search Cloud 2.0. Powered By Sysdev</span> <a style="color: #646464;" href="help.html">Help</a> <a style="color: #646464;" href="about.html">About</a></p>
+    </footer>
+</div><!-- container end -->
+</body>
+</html>

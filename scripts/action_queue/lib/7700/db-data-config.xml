@@ -1,0 +1,13 @@
+<!--
+<dataConfig>
+    <dataSource type="JdbcDataSource" driver="com.mysql.jdbc.Driver" url="jdbc:mysql://host:port/tablename" user="user" password="password"/>
+    <document>
+        <entity name="item" pk="id" query="select * from item"
+                deltaImportQuery="select * from item where id='${dih.delta.id}'"
+                deletedPkQuery ="select id from item where deleted=1"
+                deltaQuery="select * from item where last_modified > '${dataimporter.last_index_time}'">
+            <field column="NAME" name="name" />
+        </entity>
+    </document>
+</dataConfig>
+-->

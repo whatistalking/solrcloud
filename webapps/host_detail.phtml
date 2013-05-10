@@ -1,0 +1,77 @@
+<style>
+    .clear{
+        height:5px;
+    }
+</style>
+<ul class="breadcrumb">
+    <li><a href="index.php">Home</a> <span class="divider">/</span></li>
+    <li><a href="host.php">Host</a><span class="divider">/</span></li>
+    <li class="active">Host Info</li>
+</ul>
+<div class="well">
+    <h3>
+        Host Info
+    </h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Host Name</th>
+                <th>Host Ip</th>
+                <th>Host Memory(GB)</th>                
+            </tr>
+        </thead>
+        <tbody>           
+            <tr>
+                <td height="27px"><?php echo $host_info['host_id'];?></td>
+                <td><?php echo $host_info['host_name'];?></td>
+                <td><?php echo $host_info['host_ip'];?></td>
+                <td><?php echo round($host_info['host_memory']/1024,2);?></td>                
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="clear"></div>
+<script type="text/javascript" src="js/swfobject.js"></script>
+<script type="text/javascript" src="js/json2.js"></script>
+
+<div class="well">
+	<h3>host内存分配情况</h3>
+		<div style="text-align:center"><div id="mem_instance"></div></div>	
+		<script type="text/javascript"> var mem_instance = <?php echo ($json_mem_instance?$json_mem_instance:"{}");?>;</script>
+		<script>
+		swfobject.embedSWF("img/open-flash-chart.swf", "mem_instance", "900", "330", "9.0.0","",{"get-data":"chart_mem_instance"},{policyfile:"crossdomain.xml",allowScriptAccess:"always",wmode:'transparent'});
+		function ofc_ready(){}
+		function chart_mem_instance(){
+			return JSON.stringify(mem_instance);
+		}
+		</script>
+</div>
+<div class="clear"></div>
+
+
+<div class="well">
+	<h3>Load Average</h3>
+		<div style="text-align:center"><div id="load_average"></div></div>	
+		<script type="text/javascript"> var load_average_data = <?php echo ($json_load?$json_load:"{}");?>;</script>
+		<script>
+		swfobject.embedSWF("img/open-flash-chart.swf", "load_average", "900", "330", "9.0.0","",{"get-data":"chart_load_average"},{policyfile:"crossdomain.xml",allowScriptAccess:"always",wmode:'transparent'});
+		function ofc_ready(){}
+		function chart_load_average(){
+			return JSON.stringify(load_average_data);
+		}
+		</script>
+</div>
+<div class="clear"></div>
+<div class="well">
+	<h3>Memory Used</h3>
+		<div style="text-align:center"><div id="memory_used"></div></div>	
+		<script type="text/javascript"> var memory_used_data = <?php echo ($json_mem?$json_mem:"{}");?>;</script>
+		<script>
+		swfobject.embedSWF("img/open-flash-chart.swf", "memory_used", "900", "330", "9.0.0","",{"get-data":"chart_memory_used"},{policyfile:"crossdomain.xml",allowScriptAccess:"always",wmode:'transparent'});
+		function ofc_ready(){}
+		function chart_memory_used(){
+			return JSON.stringify(memory_used_data);
+		}
+		</script>
+</div>

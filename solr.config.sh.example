@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# 机器特定的配置，请放在/home/www/conf 目录下
+
+# # nginx.log.sh / nginx.speed.sh 里会用到 标明当前是哪台主机，和IDX10-003 最后的数字对应
+# host=-1
+#
+# # nginx.execator.sh / solr.execator.sh 里会用到，ID是DB里主机对应的ID
+# host_id=-1
+
+# vi: set ft=sh :
+

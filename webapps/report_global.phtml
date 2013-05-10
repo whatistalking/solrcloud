@@ -1,0 +1,92 @@
+<ul class="breadcrumb">
+    <li><a href="index.php">Home</a><span class="divider">/</span></li>
+    <li class="active">Report</li>
+</ul>
+<div>
+    <ul class="nav nav-tabs">
+    <li class=""><a href="report.php">Dashboard</a></li>
+    <li class="active"><a href="report.php?action=global">Global Report</a></li>
+    </ul>
+</div>
+<div class="row-fluid">
+<div class="tabbable tabs-left">
+    <ul class="nav nav-tabs">
+        <!-- <li class="nav-header">Service</li> -->
+        <li class="active"><a href="#a" data-toggle="tab">查询数/更新数/文档数</a></li>
+        <li><a href="#b" data-toggle="tab">内存大小</a></li>
+        <li><a href="#c" data-toggle="tab">索引大小</a></li>
+    </ul>
+    <div class="tab-content">
+        <ul class="nav nav-tabs">
+        <li class="tab_depart btn btn-link active" id="t_all">All</li>
+        <li class="tab_depart btn btn-link" id="t_anjuke">Anjuke</li>        
+        <li class="tab_depart btn btn-link" id="t_haozu">Haozu</li>        
+        <li class="tab_depart btn btn-link" id="t_aifang">Aifang</li>        
+        <li class="tab_depart btn btn-link" id="t_jinpu">Jinpu</li>        
+        <li class="tab_depart btn btn-link" id="t_inc">Inc</li>
+        </ul>
+        
+	<div class="tab-pane active" id="a">
+	</div>
+
+        <div class="tab-pane" id="b">
+        <span>内存大小</span>
+	</div>
+		
+        <div class="tab-pane" id="c">
+        <span>索引大小</span>
+        </div>
+    </div>
+</div>
+</div>
+<script type="text/javascript" src="js/instance.js"></script>
+<script type="text/javascript">
+function draw_chart(chart_data){
+    sc_url = '<?php echo $cfg['sc_url'] ;?>';
+    url = './ajax/report.php?param=' + JSON.stringify(chart_data);
+    $.ajax({
+        url:url,
+            async:false,
+            success:function(data){
+                $('#a').append(data);
+            }   
+    }); 
+}
+
+draw = function(){
+//global + docnumber/select/update
+    var date = new Date();
+    var to = date.getFullYear() +'-'+ (date.getMonth()+1) +'-'+ date.getDate() +' '+ date.getHours() +':'+ date.getMinutes() +':'+ date.getSeconds();
+    date.setDate(date.getDate()-1);
+    var from = date.getFullYear() +'-'+ (date.getMonth()+1) +'-'+ date.getDate() +' '+ date.getHours() +':'+ date.getMinutes() +':'+ date.getSeconds();
+    var select_date = {};
+    select_date[0] = {};
+    select_date[0].from = from;
+    select_date[0].to = to;
+
+    var chart_data = {};
+    chart_data[0] = {}
+    chart_data[0].report_id = 41;
+    chart_data[0].target_id = {};
+    chart_data[0].div_id = 'a1';
+    chart_data[0].select_date = select_date;
+    if($('#a #a1').length==0)$('#a').append('<div id="a1" style="width:900px; height:400px;"></div>'); 
+    chart_data[1] = {}
+    chart_data[1].report_id = 42;
+    chart_data[1].target_id = {};
+    chart_data[1].div_id = 'a2';
+    chart_data[1].select_date = select_date;
+    if($('#a #a2').length==0)$('#a').append('<div id="a2" style="width:900px; height:400px;"></div>'); 
+    chart_data[2] = {}
+    chart_data[2].report_id = 43;
+    chart_data[2].target_id = {};
+    chart_data[2].div_id = 'a3';
+    chart_data[2].select_date = select_date;
+    if($('#a #a3').length==0)$('#a').append('<div id="a3" style="width:900px; height:400px;"></div>'); 
+    draw_chart(chart_data);
+}
+$(document).ready(function(){
+    $("i").tooltip();
+    $('.nav-tabs li').bind('click',draw());
+});
+</script>

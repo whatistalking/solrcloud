@@ -1,0 +1,84 @@
+<ul class="breadcrumb">
+    <li><a href="index.php">Home</a> <span class="divider">/</span></li>
+    <li><a href="service.php">Service</a><span class="divider">/</span></li>
+    <li class="active">Edit Schema Field</li>
+</ul>
+<div class="well">
+    <h3 id="service_list">Edit Instance Schema Field</h3>
+    <form id="form" class="form-horizontal" action="" method="post">
+        <fieldset id="schema_field">
+        <!--  <legend>REQUIRED</legend>      -->
+            <div class="control-group">
+                <label class="control-label" for="name">Name : </label>
+                <div class="controls">
+                <!-- <span><?php echo $field["name"];?></span> -->
+                <input name="name" id="name" type="text" disabled="disabled" value="<?php echo $field["name"];?>" />
+                </div>  
+            </div>    
+            <div class="control-group">
+                <label class="control-label" for="type">Type : </label>
+                <div class="controls">
+                    <select name="type" id="type" onchange="get_schema_field_support_options($(this).val());">
+                        <option value="choose">choose type</option>
+                        <?php foreach($type_list as $type_list_value){?>
+                        <option value="<?php echo $type_list_value['name'];?>" <?php if($field["type"]==$type_list_value['name'])echo "selected";?> ><?php echo $type_list_value['name'];?></option>
+                        <?php }?>
+                    </select>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="indexed">Indexed : </label>
+                <div class="controls">
+                    <input type="checkbox" name="indexed" <?php if($field["indexed"]=='true'){echo "checked";}?>>
+                </div>
+            </div> 
+            <div class="control-group">
+                <label class="control-label" for="stored">Stored : </label>
+                <div class="controls">
+                    <input type="checkbox" name="stored" <?php if($field["stored"]=='true'){echo "checked";}?>>
+                </div>
+            </div> 
+            <div class="control-group">
+                <label class="control-label" for="dynamic_field">DynamicField : </label>
+                <div class="controls">
+                    <input type="checkbox" name="dynamic_field" <?php if($field["is_dynamic_field"]==true){echo "checked";}?>>
+                </div>
+            </div>
+        </fieldset>
+        <fieldset id="schema_field_ext" <?php if(!$support_types){?>style="display:none"<?php }?> >
+            <legend>Optional</legend>
+            <?php if($support_types){ ?>
+            <?php foreach($support_types as $support_type_value){ ?>
+            <div class="control-group">
+                <label class="control-label" for="<?php echo $support_type_value['name'];?>"><?php echo $support_type_value['name'];?> : </label>
+                <div class="controls">
+                <?php if($support_type_value['value']){?>
+                    <select name="<?php echo $support_type_value['name'];?>">
+                        <option value="">choose</option>
+                        <?php 
+                            $type_value_arr=explode('|', $support_type_value['value']);
+                            foreach($type_value_arr as $type_value_option){
+                        ?>
+                        <option value="<?php echo $type_value_option;?>" <?php if(isset($field[$support_type_value['name']])&&$field[$support_type_value['name']]==$type_value_option)echo "selected";?>><?php echo $type_value_option;?></option>
+                        <?php }?>
+                    </select>
+                <?php }else{ ?> 
+                    <input name="<?php echo $support_type_value['name'];?>" id="<?php echo $support_type_value['name'];?>" type="text" value="<?php if(isset($field[$support_type_value['name']]))echo $field[$support_type_value['name']];?>" />
+                <?php } ?>
+                </div>
+            </div>
+            <?php } } ?>              
+        </fieldset>
+        <div class="control-group">
+            <div class="controls">
+                <input class="btn btn-primary" id="button1" type="submit" value="Send" />
+                <input type="hidden" name="instance_id" value="<?php echo $service_id;?>" />
+                <input type="hidden" name="action" value="update_field" />
+                <input type="hidden" name="schema_type" value="1" /> 
+            </div>
+        </div>      
+    </form>
+</div>
+<script>
+window.onload=edit_schema_valid;
+</script>

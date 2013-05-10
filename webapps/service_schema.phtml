@@ -1,0 +1,194 @@
+<script type="text/javascript">
+function changezd_schema(){
+    document.getElementById("schema_config_hd").style.display="none";
+    document.getElementById("schema_config_zd").style.display="";
+    $("#schema_type_1").attr('checked', true);
+    add_service_schema_valid_destroy();
+}
+
+function changesd_schema(){
+    document.getElementById("schema_config_hd").style.display="";
+    document.getElementById("schema_config_zd").style.display="none";
+    $("#schema_type_2").attr('checked', true);
+    add_service_schema_valid_add();
+}
+</script>
+<ul class="breadcrumb">
+    <li><a href="index.php">Home</a> <span class="divider">/</span></li>
+    <li><a href="service.php">Service</a><span class="divider">/</span></li>
+    <li class="active">New Service</li>
+</ul>
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span4">
+        <h3 style="font-weight:normal;">1 Add Service Info</h3>
+        </div>
+        <div class="span4">
+        <h3 style="color:#3289B8;">2 Add Schema</h3>
+        </div>
+        <div class="span4">
+        <h3 style="font-weight:normal;">3 Running</h3>
+        </div>
+    </div>
+</div>
+<div class="well">
+<?php if(!empty($solr_schema['fields']) || !empty($solr_schema['dynamicFields'])){ ?>
+<div id="box">
+    <h3 id="schema_information">
+        Schema Information
+        <!-- <span class="pull-right">
+        <?php if($service_info['schema_type']==1){ ?><a href="schema_fields.php?action=add&service_id=<?php echo $service_id; ?>" ><img src="img/icons/add.gif" title="add field" width="16" height="16" /></a><?php } ?>
+        </span> -->
+    </h3>
+    <table class="table" id="solr_schema">
+        <thead>
+            <tr>
+                <th width="70">Field</th>
+                <th width="60">Type</th>
+                <th width="50">Indexed</th>
+                <th width="50">Stored</th>
+                <th width="60">Required</th>
+                <th width="75">MultiValued</th>
+                <th>Default</th>
+                <th width="40px">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if(isset($solr_schema['fields'])){$fields_list = $solr_schema['fields'];?>
+            <?php foreach($fields_list as $field_value) { ?>
+            <tr>
+                <td class="ssc"><?=$field_value["name"]?></td>
+                <td class="ssc"><?=$field_value["type"]?></td>
+                <td><?=$field_value["indexed"]=="true"?'<i class="icon-ok"></i>':"-"?></td>
+                <td><?=$field_value["stored"]=="true"?'<i class="icon-ok"></i>':"-"?></td>
+                <td><?=isset($field_value["required"])&&$field_value["required"]=="true"?'<i class="icon-ok"></i>':"-"?></td>
+                <td><?=isset($field_value["multiValued"])&&$field_value["multiValued"]=="true"?'<i class="icon-ok"></i>':"-"?></td>
+                <td class="ssc"><?=isset($field_value["default"])?$field_value["default"]:""?></td>
+                <td><?php if($service_info['schema_type']==1){ ?>
+                    <!-- <a href="service.php?action=schema_edit&service_id=<?php echo $service_id; ?>&name=<?php echo $field_value['name'];?>"><i class="icon-edit" title="edit schema field"></i></a> -->
+                    <a href="#" onclick="edit_schema_field('<?php echo $service_id; ?>', '<?php echo $field_value['name'];?>', 's');"><i class="icon-edit" title="edit schema field"></i></a>              
+                    <a href="service.php?action=schema_delete&service_id=<?php echo $service_id; ?>&name=<?php echo $field_value['name'];?>" onclick="return confirm('Are you sure to delete this field?');"><i class="icon-remove" title="delete schema field"></i></a>
+                    <?php } ?>
+                </td>
+            </tr>
+            <?php } ?>
+            <?php } ?>
+            <?php if(isset($solr_schema['dynamicFields'])){$fields_list = $solr_schema['dynamicFields']; ?>
+            <?php foreach($fields_list as $field_key=>$field_value){?>
+            <?php if($field_key==0){?>
+            <tr>
+                <td colspan="8" class="ssc" ><strong>DynamicFields</strong></td>
+            </tr>
+            <?php }?>
+            <tr>
+                <td class="ssc"><?=$field_value["name"]?></td>
+                <td class="ssc"><?=$field_value["type"]?></td>
+                <td><?=isset($field_value["indexed"])&&$field_value["indexed"]=="true"?'<i class="icon-ok"></i>':"-"?></td>
+                <td><?=isset($field_value["stored"])&&$field_value["stored"]=="true"?'<i class="icon-ok"></i>':"-"?></td>
+                <td><?=isset($field_value["required"])&&$field_value["required"]=="true"?'<i class="icon-ok"></i>':"-"?></td>
+                <td><?=isset($field_value["multiValued"])&&$field_value["multiValued"]=="true"?'<i class="icon-ok"></i>':"-"?></td>
+                <td class="ssc"><?=isset($field_value["default"])?$field_value["default"]:""?></td>
+                <td><?php if($service_info['schema_type']==1){ ?>            
+                    <a href="#" onclick="edit_schema_field('<?php echo $service_id; ?>', '<?php echo $field_value['name'];?>', 's');"><i class="icon-edit" title="edit schema field"></i></a>
+                    <a href="service.php?action=schema_delete&service_id=<?php echo $service_id; ?>&name=<?php echo $field_value['name'];?>" onclick="return confirm('Are you sure to delete this field?');"><i class="icon-remove" title="delete schema field"></i></a>
+                </td><?php } ?>
+            </tr>
+            <?php }?>
+            <?php }?>
+        </tbody>
+    </table>
+</div>
+<?php } ?>
+<div id="schema_field_edit_ajax"></div>
+<div id="add_box">
+    <h3 id="service_list">Add Instance Schema Field</h3>
+    <form id="form" class="form-horizontal" action="" method="post"> 
+        <fieldset id="solr_schema">
+            <div class="control-group">
+                <label class="control-label" for="schema_type">Schema Type : </label>
+                <div class="controls">
+			    <ul id="tab_schema" class="nav nav-tabs">
+                    <li class="<?php if($service_info['schema_type']==1)echo 'active';?>">
+                    <a href="#auto" data-toggle="tab" id="a_schema_auto" onclick="changezd_schema();" class="tip" title="逐条添加Field，uniqueKey defaultSearchField defaultOperator请创建完Service后自行编辑">自动</a>
+                    <input style="display: none;" type="radio" id="schema_type_1" name="schema_type" 
+                    value="1" <?php if($service_info['schema_type']==1)echo 'checked';?>/>
+			        </li>
+                    <li class="<?php if($service_info['schema_type']==2)echo 'active';?>">
+                    <a href="#manual" data-toggle="tab" id="a_schema_manual" onclick="changesd_schema();" class="tip" title="直接填写schema xml，如果已经自动填写过再切换到手动填写，直接自动填写的部分将清空">手动</a>
+                    <input style="display: none;" type="radio" id="schema_type_2" name="schema_type" 
+                    value="2" <?php if($service_info['schema_type']==2)echo 'checked';?>/>                 
+                    </li>
+                </ul>                        
+                </div>
+            </div>
+        </fieldset>
+        <div id="schema_config_zd" <?php if(isset($schema_info)){ ?>style="display:none;"<?php } ?>>
+        <fieldset id="schema_field">         
+            <div class="control-group">
+                <label class="control-label" for="name">Name : </label> 
+                <div class="controls">
+                <input name="name" id="name" type="text" value="" />
+                </div>
+            </div>              
+            <div class="control-group">
+                <label class="control-label" for="type">Type : </label>
+                <div class="controls">
+                <select name="type" id="type" onchange="get_schema_field_support_options($(this).val());">
+                    <option value="choose">choose type</option>
+                    <?php foreach($type_list as $type_list_value){?>
+                    <option value="<?php echo $type_list_value['name'];?>"><?php echo $type_list_value['name'];?></option>
+                    <?php }?>
+                </select>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="indexed">Indexed : </label>
+                <div class="controls">
+                    <input type="checkbox" name="indexed" checked="checked" />
+                </div>
+            </div> 
+            <div class="control-group">
+                <label class="control-label" for="stored">Stored : </label>
+                <div class="controls">
+                    <input type="checkbox" name="stored" checked="checked" />
+                </div>
+            </div> 
+            <div class="control-group">
+                <label class="control-label" for="dynamic_field">DynamicField : </label>
+                <div class="controls">
+                    <input type="checkbox" name="dynamic_field" />
+                </div>
+            </div> 
+        </fieldset> 
+        <fieldset id="schema_field_ext" style="display:none;">
+            <legend>OPTIONAL</legend>                
+        </fieldset>
+        </div> 
+        <fieldset id="schema_config_hd" <?php if(!isset($schema_info)){ ?>style="display:none;"<?php } ?>>
+            <div class="control-group">
+            <div class="controls">
+                <textarea style="width:500px;height:100px;" name="hand_config_schema" id="hand_config_schema"><?php if(isset($schema_info)){ echo $schema_info; } ?></textarea>
+            </div>
+            </div>                  
+        </fieldset>      
+        <div class="control-group">
+            <div class="controls">
+            <input class="btn btn-primary" id="button1" type="submit" value="Add" />
+            <hr id="s-hr" />
+            <a class="btn btn-success" href="service.php?action=schema_done&service_id=<?php echo $service_id;?>" onclick="return confirm('Are you sure to done?');">
+            Next
+            </a>
+            <input type="hidden" name="service_id" value="<?php echo $service_id;?>" />
+            <input type="hidden" name="action" value="update_field" />
+            </div>                 
+        </div>      
+    </form>
+</div>
+</div>
+<script>
+window.onload=service_add_schema_valid;
+$(document).ready(function(){
+	$("i").tooltip();
+	$(".tip").tooltip();
+});
+</script>

@@ -1,0 +1,71 @@
+<ul class="breadcrumb">
+    <li><a href="index.php">Home</a> <span class="divider">/</span></li>
+    <li><a href="service.php">Service</a><span class="divider">/</span></li>
+    <li class="active">New Service</li>
+</ul>
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span4">
+        <h3 style="font-weight:normal;">1 Add Service Info</h3>
+        </div>
+        <div class="span4">
+        <h3 style="font-weight:normal;">2 Add Schema</h3>
+        </div>
+        <div class="span4">
+        <h3 style="color:#3289B8;">3 Running</h3>
+        </div>
+    </div>
+</div>
+<div class="alert alert-success" id="notice">
+    <h4>
+    Service <?php echo $service_info['service_name']?> is created successfully.
+    </h4>
+</div>
+<div id="service">
+    <h3>
+    Service 
+    <a href="service_detail.php?service_id=<?php echo $service_info['service_id']?>"><?php echo $service_info['service_name']?>>></a>
+    </h3>
+</div>
+<div id="list_instance">
+    <span>我们自动帮你创建了这个Service的一个instance并已经绑定</span>
+    <table class="table">
+        <thead>
+            <tr>
+                <th width="40px">ID</th>
+                <th>Host Name</th>
+                <th>Host Ip</th>
+                <th width="38px">Port</th>
+                <th width="80px">Lb Weight</th>
+                <th width="35px">Mem</th>
+                <th width="50px">Writable</th>
+                <th width="50px">Readable</th>
+                <th width="60px">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if($instance_list){foreach($instance_list as $k=>$v){?>
+            <tr>
+                <td height="27px"><?php echo $v['instance_id']?></td>
+                <td><?php echo $host_list[$v['host_id']]['host_name'];?></td>
+                <td><?php echo $host_list[$v['host_id']]['host_ip'];?></td>
+                <td><?php echo $v['port_num']?></td>
+                <td><?php echo $v['lb_weight']?></td>
+                <td><?php echo round($v['use_memory']/1024, 2)?>G</td>
+                <td><?php echo ($v['writable'])?'<i class="icon-ok"></i>':'-';?></td>
+                <td><?php echo ($v['readable'])?'<i class="icon-ok"></i>':'-';?></td>
+                <td><?php if($v['is_locked']){ ?>processing<?php }else{echo $cfg['instance_status'][$v['instance_status']];}?></td>
+            </tr>
+            <?php }}?>
+        </tbody>
+    </table>
+</div>
+<div class="well">
+    <h5>
+    Notice
+    </h5>
+    <p>Almost Done，<a href="service_detail.php?service_id=<?php echo $service_info['service_id']?>">去启动Service>></a></p>
+    <p><a href="service_detail.php?service_id=<?php echo $service_info['service_id']?>&tab=2">新增instance>></a></p>
+    <p><a href="service.php?action=edit&service_id=<?php echo $service_info['service_id']?>">review和修改service的配置>></a></p>
+    <p><a href="service_detail.php?service_id=<?php echo $service_info['service_id']?>&tab=2">review和Edit instance>></a></p>
+</div>

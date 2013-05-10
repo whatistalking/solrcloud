@@ -1,0 +1,139 @@
+<ul class="breadcrumb">
+    <li><a href="index.php">Home</a><span class="divider">/</span></li>
+    <li class="active">Report</li>
+</ul>
+<div>
+    <ul class="nav nav-tabs">
+    <li class="active"><a href="report.php">Dashboard</a></li>
+    <li class=""><a href="report.php?action=global">Global Report</a></li>
+    </ul>
+</div>
+<div id="list" class="alert alert-info" >
+    <h5>Saved Dashboard: </h5>
+    <span id="saved_list">
+    <?php
+    if(!empty($report_setting)){
+        foreach($report_setting as $s){
+    ?>
+    <a class="a_r_name" href="report.php?r_id=<?php echo $s['id'];?>"><?php echo $s['name'];?></a>
+    <?php } } ?>
+    </span>
+    <a href="report.php">+Add new</a>
+</div>
+<div id="name">
+    <span id="report_name" style="font-size:25px;font-weight:bold;"><?php if(isset($report_setting[$id])){echo $report_setting[$id]['name'];}else{echo 'new';}?></span>
+    <input name="report_name_edit" id="report_name_edit" type="text" value="<?php if(isset($report_setting[$id])){echo $report_setting[$id]['name'];}else{echo 'new';}?>" style="width:100px; display: none;" />
+    <input name="update_id" id="update_id" type="hidden" value="<?php echo $id;?>" />
+    <a href="#" id="name_edit">Edit</a>
+    <a href="#" id="name_save" style="display: none;">Save</a>
+    <span id="name_delete_span">
+    <?php if($id != '0'){?>
+    <a href="report.php?action=delete&r_id=<?php echo $id;?>" id="name_delete">Delete</a>
+    <?php } ?>
+    </span>
+</div>
+<br />
+<div id="select" class="well">
+    <div>
+    <a href="#" class="btn btn-primary btn-small" id="add_report">+Add report</a>
+    <a href="#" id="save_report">Save</a>
+    <span class="pull-right">
+        <span class="dropdown">
+            <input id="time-select" class="btn dropdown-toggle" style="width:180px;" data-toggle="dropdown" type="text" value="<?php echo $from1.' to '.$to1;?>" />
+            <span id="time-select-content" class="dropdown-menu well" style="width:280px;">
+                <input type="text" style="width:100px;" value="<?php echo $from1;?>" data-date-format="yyyy-mm-dd" class="date-picker" id="from_1" />
+                to
+                <input type="text" style="width:100px;" value="<?php echo $to1;?>" data-date-format="yyyy-mm-dd" class="date-picker" id="to_1" />
+                <br />
+                <label class="checkbox"><input type="checkbox" id="select-compare" name="select-compare" value="1">Compare to</label>
+                <span id="time-compare" style="display:none;">
+                <input type="text" style="width:100px;" value="<?php echo $from2;?>" data-date-format="yyyy-mm-dd" class="date-picker" id="from_2" />
+                to
+                <input type="text" style="width:100px;" value="<?php echo $to2;?>" data-date-format="yyyy-mm-dd" class="date-picker" id="to_2" />
+                </span>
+                <br />
+                <a href="#" style="width:20px;" class="btn btn-small" id="time-select-ok">OK</a>
+            </span>
+        </span>
+        <span class="btn-group" data-toggle="buttons-radio">
+            <button class="btn btn-mini active" id="b_merge">Merge</button>
+            <button class="btn btn-mini" id="b_grid">Grid</button>
+        </span>
+    </span>
+    </div>
+    <br />
+    <div id="content" style="width:800px;"></div>
+</div>
+<div id="report_chart">
+</div>
+<div style="clear:both"></div>
+<script src="./js/amcharts/amcharts.js" type="text/javascript"></script>
+<script type="text/javascript" src="js/instance.js"></script>
+<script type="text/javascript" src="js/report.js"></script>
+<script type="text/javascript" src="js/bootstrap-datepicker.js"></script>
+<script type="text/javascript" src="js/jquery.cookie.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    sc_url = '<?php echo $cfg['sc_url']; ?>';    
+
+    $('.date-picker').datepicker();
+
+    //datapicker dropdown
+    $('#time-select').click(function(){
+        $('#time-select-content').show();
+    })
+    $(document).live('click', function(e) {  
+        var clickme = $(e.target);  
+        if(!clickme.parents().hasClass("dropdown-menu") && !clickme.hasClass("dropdown-menu")) $('#time-select-content').hide();
+    });  
+
+    $("#time-select-ok").click(function(event){
+    	change_time_select();
+    });
+
+    $("#select-compare").click(function(event){
+    	$('#time-compare').toggle();
+    });
+    
+    $("#add_report").click(function(event){
+    	show_select();
+    });
+
+    $("#save_report").click(function(event){
+    	save_select_db();
+    });
+
+    $("#name_edit").click(function(event){
+    	edit_name();
+    });
+
+    $("#name_save").click(function(event){
+    	save_name();
+    });
+
+    $("#b_merge").click(function(event){
+        if(!$("#b_merge").hasClass('active')){
+            //type=1
+    	    change_display_type('1');
+        }
+    });
+
+    $("#b_grid").click(function(event){
+    	if(!$("#b_grid").hasClass('active')){
+    	    //type=2
+    	    change_display_type('2');
+    	}
+    });
+
+    $("#select_cancel").live("click",function(){
+    	$("#content").hide(500);
+    });
+
+    $("#select_send").live("click",function(){
+		save_select_cookie();
+		$("#content").hide();
+    }); 
+
+    load_setting();
+});
+</script>

@@ -1,0 +1,161 @@
+<ul class="breadcrumb">
+    <li><a href="index.php">Home</a> <span class="divider">/</span></li>
+    <li><a href="instance.php">Instance</a><span class="divider">/</span></li>
+    <li class="active">New Instance</li>
+</ul>
+<div class="well">
+    <h3 id="add_instance">Add Instance</h3>
+    <form id="form" class="form-horizontal" action="" method="post">
+        <fieldset id="instance">
+            <legend>Instance Information</legend>   
+            <div class="control-group">
+                <label class="control-label" for="use_memory">Use Memory : </label>
+                <div class="controls">
+                <input name="use_memory" id="use_memory" type="text" value="1024" /> MB
+                </div>
+            </div>     
+            <br />       
+            <div class="control-group">
+                <label class="control-label" for="host_id">Host : </label>
+                <div class="controls">
+                <select name="host_id" id="host_id" style="margin-left:0px;margin-bottom:3px">
+                    <!--  <option value="choose">choose</option> -->
+                    <?php foreach($host_list as $hlv){?>
+                    <option value="<?php echo $hlv['host_id'];?>" ><?php echo $hlv['host_name'];?>(<?php echo $hlv['host_ip'];?>)[Total_mem:<?php echo $hlv['host_memory'];?>;Ins_use:<?php echo $hlv['use_mem'];?>]</option>
+                    <?php }?>
+                </select>
+                <div style="padding-bottom: 25px;"id="host_msg"></div>
+                </div>
+            </div>   
+            <div class="control-group">
+                <label class="control-label" for="lb_weight">Lb Weight : </label>
+                <div class="controls">
+                <input name="lb_weight" id="lb_weight" type="text" value="" />
+                </div>
+            </div>  
+            <div class="control-group">
+                <label class="control-label" for="max_fails">Max Fails : </label>
+                <div class="controls">
+                <input name="max_fails" id="max_fails" type="text" value="" />
+                </div>
+            </div>  
+
+            <div class="control-group">
+                <label class="control-label" for="service_id" style="margin-right:20px;">Bind Service : </label>
+                <div class="tabbable tabs-left">
+                    <ul class="nav nav-tabs">
+                    <!--  <li class="nav-header">Department</li> -->
+                    <?php foreach($depart as $k => $d){ ?>
+                    <li <?php if($k==0){echo 'class="active"';}?>><a href="<?php echo '#'.$d;?>" data-toggle="tab"><?php echo $d;?></a></li>                
+                    <?php } ?>
+                    </ul>
+                    <div class="tab-content">
+                        <?php if($service_list) {foreach($service_list as $key => $slv_arr) {?>
+                        <div style="line-height:30px;" class="tab-pane <?php if($depart[0] == $key){echo 'active';}?>" id="<?php echo $key;?>">
+                        <?php foreach($slv_arr as $slv){?>
+                        <input type="radio" name="service_id" value="<?php echo $slv['service_id'];?>" <?php if(count($depart)==1 && count($slv_arr)==1){echo 'checked="checked"';}?>/>
+                        <?php echo $slv['service_name'];?>
+                        <br />    
+                        <?php } ?>
+                        </div>
+                        <?php } }?>        
+                    </div>
+                </div>
+            </div>
+            <br />
+        </fieldset>
+        
+        <div class="control-group">
+            <div class="controls">   
+                <button type="button" class="btn btn-primary" id="btn_instance_add">Send</button>
+                <input type="hidden" name="action" value="do_add" />
+            </div>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+
+    var sc_url = '<?php echo $sc_url;?>' + '/instance.php?action=list_ajax';
+    
+	function isInteger(str)
+	{
+		if (/^-?\d+$/.test(str)) {
+	        return true;
+	    }
+	    return false;
+	}
+
+	function select_host_by_mem(){
+		var sc_url = '<?php echo $sc_url;?>' + '/instance.php?action=list_ajax';
+		var mem = $("#use_memory").val();
+		if (isInteger(mem)) {
+			$.get(sc_url, {mem:mem}, function(data){
+			    var html = "";
+			    var span = "";
+	            $(data).each(function(k,o){
+				    html = html + "<option class='opt_host' id='host_"+o.host_id+"' value='"+o.host_id+"'>"+o.host_name+o.host_ip+"[Total_mem:"+o.host_memory+" Ins_use:"+o.use_mem+"]"+"</option>";
+                    if (o.msg) {
+                        if (k == 0){
+                        	span = span + "<span class='span_host' style='color:red;' id='span_host_"+o.host_id+"'>"+o.msg+"</span>";
+                        } else {
+                        	span = span + "<span class='span_host' style='display:none; color:red;' id='span_host_"+o.host_id+"'>"+o.msg+"</span>";
+                        }         	
+                    }   
+				});
+				$("#host_id").empty().html(html);
+				$("#host_msg").empty().html(span);        	
+			},"json");
+		}
+	}
+
+	$("#btn_instance_add").click(function(){
+
+		var id = $("#host_id").find("option:selected").attr("id");
+		var span_id = "span_" + id;
+		var msg = $("#"+span_id).text();
+		
+	    if(msg == '错误：此host空间不足！'){
+	    
+	    } else {
+	        $(this).attr("disabled",true);
+	        $("#form").submit();
+	    }
+	});
+
+	$("#host_id").change(function(){
+	    var id = $(this).find("option:selected").attr("id");
+	    var span_id = "span_" + id;
+	    $(".span_host").hide();
+	    $("#"+span_id).show();
+	});	
+
+	$("#use_memory").blur(function(){
+		var mem = $(this).val();
+		if (isInteger(mem)) {
+			$.get(sc_url, {mem:mem}, function(data){
+			    var html = "";
+			    var span = "";
+	            $(data).each(function(k,o){
+				    html = html + "<option class='opt_host' id='host_"+o.host_id+"' value='"+o.host_id+"'>"+o.host_name+o.host_ip+"[Total_mem:"+o.host_memory+" Ins_use:"+o.use_mem+"]"+"</option>";
+                    if (o.msg) {
+                        if (k == 0){
+                        	span = span + "<span class='span_host' style='color:red;' id='span_host_"+o.host_id+"'>"+o.msg+"</span>";
+                        } else {
+                        	span = span + "<span class='span_host' style='display:none; color:red;' id='span_host_"+o.host_id+"'>"+o.msg+"</span>";
+                        }         	
+                    }   
+				});
+				$("#host_id").empty().html(html);
+				$("#host_msg").empty().html(span);        	
+			},"json");
+		}
+	});
+
+	select_host_by_mem();
+});
+</script>
+<script>
+window.onload=instance_valid;
+</script>

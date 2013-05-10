@@ -1,0 +1,14 @@
+<?php
+
+// 机器特定的配置文件，请放在/home/www/conf目录下
+
+// $cfg['current_status_url']='http://idx10-003.i.ajkdns.com:8984/api.php';
+//
+// // service  detail 页面的数据读取时主机的ID，和IDX10-003最后的数字对应。和config.sh中的$host的值对应
+// $cfg['host'] = 10;
+
+// // scripts/status.docnumber.php 服务文档数量监控使用的url 还有webapp/service_detail.phtml使用的搜索URL
+// $cfg['search_url'] = 'http://sc10-001.a.ajkdns.com:8984';
+
+// vi: set ft=php :
+

@@ -1,0 +1,51 @@
+<pre>
+dataimport：
+简介：
+solr基础数据有几种来源方式，一种是push常见的xml文件，一种是通过DataImportHandler从关系型DB中获取。
+
+目的：
+直接从DB将数据rebuild进来（这段期间select功能不受影响）,无需先将数据导成xml文件再update。
+并且支持增量更新，减少业务端开发成本。
+
+配置：
+1、编辑service配置DataImport；
+1.1、dataSource配置连接DB；
+1.2、document配置具体的字段；(solr会根据schema到query的查询结果中找匹配的字段。schema中与结果相同的字段可忽略不写。本例中，schema有id,name,status字段，db中有id,NAME,status,deleted,last_modified字段)
+example:
+<textarea readonly="readonly" style="width:900px;height:100px">
+<fields>
+    <field name="id" type="sint" indexed="true" stored="true"/>
+    <field name="name" type="string" indexed="true" stored="true"/>
+    <field name="status" type="sint" indexed="true" stored="true"/>
+</fields>
+<uniqueKey>id</uniqueKey>
+</textarea>
+<textarea readonly="readonly" style="width:900px;height:200px">
+<dataConfig>
+    <dataSource type="JdbcDataSource" driver="com.mysql.jdbc.Driver" url="jdbc:mysql://host:port/dbname" user="user" password="pwd"/>
+    <document>
+        <entity name="item" pk="id" query="select * from item"
+                deltaImportQuery="select * from item where id='${dih.delta.id}'"
+                deletedPkQuery ="select id from item where deleted=1"
+                deltaQuery="select * from item where last_modified > '${dataimporter.last_index_time}'">
+            <field column="NAME" name="name" />
+        </entity>
+    </document>
+</dataConfig>
+</textarea>
+结果：
+<textarea readonly="readonly" style="width:900px;height:50px">
+<doc><int name="id">1</int><str name="name">Name001</str><int name="status">0</int></doc>
+<doc><int name="id">2</int><str name="name">Name002</str><int name="status">1</int></doc>
+</textarea>
+
+2、重启某writeable的instance；
+
+使用：
+全部导入:http://localhost:8983/solr/dataimport?command=full-import(默认&clean=true清除solr已有数据;) 
+增量更新:http://localhost:8983/solr/dataimport?command=delta-import&optimize=false(注意配置pk和deltaQuery，只更新字段last_modified最新的条目,solr3.6及其以前默认optimize=true) 
+数据删除:http://localhost:8983/solr/dataimport?command=delta-import&optimize=false(注意配置deletedPkQuery，仅适合delete flag的情况，若DB数据真的被删除，只能用http的方式)
+
+参见：
+http://wiki.apache.org/solr/DataImportHandler
+</pre>
