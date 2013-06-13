@@ -1,8 +1,7 @@
 #search cloud平台使用文档
 ---
 <yongqianghuang@anjuke.com>  
-v1.0 May 15th 2013
-
+v2.0 June 2013
 
 ##1.目标
 
@@ -11,7 +10,7 @@ v1.0 May 15th 2013
 **选择性**  
 
 * 平台提供多个版本的solr服务
-* 提供单实例、主从和sharing方式运行实例 
+* 提供单实例、主从、cloud等方式运行实例 
 
 **灵活性**  
 
@@ -22,11 +21,12 @@ v1.0 May 15th 2013
 
 **稳定性**
 
+* 集群式部署 消除单点故障
 * 心跳检查 自动重启
-* 提供手机和邮件报警机制
+* 手机和邮件报警机制
 
 ##2.架构 
-两台LB分别安装Keepalived并且分别配置为Master和Backup，实现双机热备，部署平台管理应用程序，通过nginx做反向代理，将查询更新请求转发到后端对应的各个solr实例上。
+两台LB分别安装LVS、Keepalived并且分别配置为Master和Backup，实现双机热备，部署平台管理应用程序，通过nginx做反向代理，将查询更新请求转发到后端对应的各个solr实例上。
 
         __________  +-------+
        |            |  vip  |
@@ -43,152 +43,107 @@ v1.0 May 15th 2013
        +------+                         +------+                    
        |  LB  |                         |  LB  |         
        +------+                         +------+
-    -------|-----------------------------------------------
-         proxy
-           |_________
+    -------|--------------------------------|--------------
+         proxy                              |        
+           |                                |         
+           |                                |        
+    +----------------+----------------+--------------------
+    | idx10-003      | idx10-004      |
+    | solr instances | solr instances |  ......
+    +----------------+----------------+--------------------
+
+cloud形式zookeeper采用集群方式分别部署在3台服务器上，每个solr instance都指向这些zookeeper
+    
+            +----------+  
+            |zookeeper |  ----------------- solrInstance
+            +----------+               
+           /            \  ---------------- solrInstance
+          /              \               
+    +----------+     +----------+  -------- solrInstance       
+    |zookeeper | --- | zookeepe | 
+    +----------+     +----------+  
+
 
 ##3.部署
 
-**LB**  
->lvs  
->`wget http://www.linuxvirtualserver.org/software/kernel-2.6/ipvsadm-1.24.tar.gz`  
->`tar zxvf ipvsadm-1.24.tar.gz`  
->`cd ipvsadm-1.24`  
->`make && make install`  
+**LB**
 
->keepalive  
->`wget http://www.keepalived.org/software/keepalived-1.2.2.tar.gz`  
->`tar zxvf keepalived-1.2.2.tar.gz`  
->`cd keepalived-1.2.2`  
->`./configure`  
->`make && make install`
+LVS和Keepalived安装和配置 see http://www.keepalived.org/documentation.html 
 
->config
-vim /etc/keepalived/keepalived.conf
+**Solr Cloud Server**   
 
-Master端
 
-vrrp_instance VI_1 {
-    state MASTER
-    interface eth0
-    virtual_router_id 30
-    priority 200
-    advert_int 1
-
-    virtual_ipaddress {
-        10.10.6.51/24 
-    }
-}
-
-virtual_server 10.10.6.51 8983 {
-    delay_loop 60
-    persistence_timeout 10
-    lb_algo rr
-    lb_kind NAT
-    protocol TCP
-       
-    real_server 10.10.6.32 8983 {
-        weight 1
-        TCP_CHECK {
-            connect_timeout 5
-            nb_get_retry 2
-            delay_before_retry 3
-        }
-    }
-    
-    real_server 10.10.6.40 8983 {
-        weight 1
-        TCP_CHECK {
-            connect_timeout 5
-            nb_get_retry 2
-            delay_before_retry 3
-        }
-    }
+        git clone http://git.corp.anjuke.com/corp/search-cloudV3 search-cloud
         
-}
-
-Backup端
-
-vrrp_instance VI_1 {
-    state BACKUP
-    interface eth0
-    virtual_router_id 30
-    priority 100
-    advert_int 1
-
-    virtual_ipaddress {
-        10.10.6.51/24 
-    }
-}
-
-virtual_server 10.10.6.51 8983 {
-    delay_loop 60
-    persistence_timeout 10
-    lb_algo rr
-    lb_kind NAT
-    protocol TCP
-       
-    real_server 10.10.6.32 8983 {
-        weight 1
-        TCP_CHECK {
-            connect_timeout 5
-            nb_get_retry 2
-            delay_before_retry 3
-        }
-    }
-    
-    real_server 10.10.6.40 8983 {
-        weight 1
-        TCP_CHECK {
-            connect_timeout 5
-            nb_get_retry 2
-            delay_before_retry 3
-        }
-    }
+        mysql> create database solr default character set utf8;
+        mysql -u root -D solr < search-cloud/scripts/other/solr.sql
         
-}
+        添加本机配置
+        vim  solr/config.prod.php  
+        vim  /home/www/solr.conf.php
+        
+        nohup search_cloud/scripts/nginx.cron.sh
+        
+        crontab
+        0 0 * * * /home/www/search-cloud/scripts/rsync_to_hadoop.sh
+        
+        
+
+**solr**  
+
+        git clone http://git.corp.anjuke.com/corp/search-cloudV3  search-cloud
+        
+        添加本机配置
+        vim  search-cloud/config.prod.sh  
+        vim  /home/www/solr.conf.sh  
+        
+        nohup  search-cloud/scripts/solr.cron.sh  
+        
+        crontab   
+        0 1 * * * bash /home/www/search-cloud/scripts/cron_jobs/solr.stdout.rotate.sh
+        */3 * * * * bash /home/www/search-cloud/scripts/cron_jobs/health.cron.sh	
+
+
+        solr/scripts/execator.enable.sh
+        
+
+##4.使用方法
+
+###4.1名词解释
+**host**  
+    对应一台真实的服务器，instance的实例都跑在上面   
+    
+**service**     
+    一个service代表一个搜索服务，比如二手房房源列表的搜索就可以是一个搜索服务，对应着一个service  
+    
+**instance**  
+    instance是service下实例，用来处理service接受到的搜索请求，一个instance对应一个solr服务  
+    
+处理各种搜索请求的都是instance，service相当于instance的虚拟集合，instance都跑在host上，一个service的各个instance可以分步在不同的host上。
+
+###4.2新建服务
+1. 进入http://search.corp.anjuke.com/service.php 
+2. 点击添加服务，需通过域账号验证，填写serviece名称、所属部门、solr版本和配置相关信息
+3. 添加配置scheme
+4. 编辑启动service，默认启动了一个solr实例
+5. 点击添加实例可以对同一service部署多个实例
+
+###4.2查询服务运行状态
+1. 进入http://search.corp.anjuke.com/service.php 列表
+2. 列表中找到要查询的服务名称，点击进入服务详情页
+3. 点击report查看服务各自状态监控
+
+###4.3新建实例
+* 在instance list页面和service detail页的instance list页都有新建instance的入口，按引导完成创建即可
+
+###4.4管理实例
+*  instance list可直接对instance进行管理，也可以到service单页对instance进行管理
+
+###4.4操作原则
+*  如果solrconfig更改过，需要重启Service才能使新配置生效,如果schema config更改过，需要重启instance才能使新配置生效
 
 
 
-
-
-
-
-
-
-
-# Solr Cloud
-
-## Install
-
-### Solr Instance
-
-    sudo aptitude install subversion mysql-client php5-cli php5-mysql
-    svn checkout http://projects.dev.anjuke.com/svn/sites/utils/solr-cloud/ solr/ --username=deployer
-    rm -rf solr/cloud/7700
-    svn checkout http://projects.dev.anjuke.com/svn/sites/search/cloud/ solr/cloud/7700/ --username=deployer
-    chmod +x solr/scripts/*.sh
-    touch solr/config.prod.sh solr/config.prod.php
-    nohup solr/scripts/solr.cron.sh 1>>solr/logs/solr.cron.log 2>>solr/logs/solr.cron.error.log &
-    solr/scripts/execator.enable.sh
-
-## config
-
-* machine specified configurations
-
-```
-cp solr.config.sh.example /home/www/conf/solr.config.sh # modifiy to meet your need
-cp solr.config.php.example /home/www/conf/solr.config.php # modifiy to meet your need
-```
-* production configurations
-
-pick up the example and modify to meet your need
-
-```
-cp config.prod.sh.example config.prod.sh
-cp config.prod.php.example config.prod.php
-```
-
-### some options need to be configured.
-
-
+NOTE：  
+线上地址 http://search.corp.anjuke.com/  
+dev环境  http://192.168.1.103：8080/
