@@ -1,7 +1,6 @@
 #search cloud平台使用文档
 ---
-<yongqianghuang@anjuke.com>  
-v2.0 June 2013
+
 
 ##1.目标
 
@@ -73,7 +72,7 @@ LVS和Keepalived安装和配置 see http://www.keepalived.org/documentation.html
 **Solr Cloud Server**   
 
 
-        git clone http://git.corp.anjuke.com/corp/search-cloudV3 search-cloud
+        git clone http://git.corp.***.com/corp/search-cloudV3 search-cloud
         
         mysql> create database solr default character set utf8;
         mysql -u root -D solr < search-cloud/scripts/other/solr.sql
@@ -91,7 +90,7 @@ LVS和Keepalived安装和配置 see http://www.keepalived.org/documentation.html
 
 **solr**  
 
-        git clone http://git.corp.anjuke.com/corp/search-cloudV3  search-cloud
+        git clone http://git.corp.***.com/corp/search-cloudV3  search-cloud
         
         添加本机配置
         vim  search-cloud/config.prod.sh  
@@ -122,14 +121,14 @@ LVS和Keepalived安装和配置 see http://www.keepalived.org/documentation.html
 处理各种搜索请求的都是instance，service相当于instance的虚拟集合，instance都跑在host上，一个service的各个instance可以分步在不同的host上。
 
 ###4.2新建服务
-1. 进入http://search.corp.anjuke.com/service.php 
+1. 进入http://search.corp.***.com/service.php 
 2. 点击添加服务，需通过域账号验证，填写serviece名称、所属部门、solr版本和配置相关信息
 3. 添加配置scheme
 4. 编辑启动service，默认启动了一个solr实例
 5. 点击添加实例可以对同一service部署多个实例
 
 ###4.2查询服务运行状态
-1. 进入 列表
+1. 进入http://search.corp.***.com/list.php 列表
 2. 列表中找到要查询的服务名称，点击进入服务详情页
 3. 点击report查看服务各自状态监控
 
