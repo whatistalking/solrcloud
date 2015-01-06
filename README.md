@@ -129,7 +129,7 @@ LVS和Keepalived安装和配置 see http://www.keepalived.org/documentation.html
 5. 点击添加实例可以对同一service部署多个实例
 
 ###4.2查询服务运行状态
-1. 进入http://search.corp.anjuke.com/service.php 列表
+1. 进入 列表
 2. 列表中找到要查询的服务名称，点击进入服务详情页
 3. 点击report查看服务各自状态监控
 
