@@ -141,9 +141,3 @@ LVS和Keepalived安装和配置 see http://www.keepalived.org/documentation.html
 
 ###4.4操作原则
 *  如果solrconfig更改过，需要重启Service才能使新配置生效,如果schema config更改过，需要重启instance才能使新配置生效
-
-
-
-NOTE：  
-线上地址 http://search.corp.anjuke.com/  
-dev环境  http://192.168.1.103：8080/
